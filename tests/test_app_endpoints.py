@@ -37,14 +37,14 @@ class BaseCase(unittest.TestCase):
         """
             method tests post endpoint status_code
         """
-        response = self.client().post('/api/v1/orders',
+        response = self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order))
 
         self.assertEqual(response.status_code, 201)
 
     def test_place_order_with_empty_location(self):
         """ Test for empty post validation """
-        response = self.client().post("/api/v1/orders",
+        response = self.client().post("/api/v1/parcels",
                                       content_type='application/json',
                                       data=json.dumps(post_with_empty_destination))
         self.assertEqual(response.status_code, 401)
@@ -52,39 +52,39 @@ class BaseCase(unittest.TestCase):
 
     def test_fetch_all_orders(self):
         "test for fetching available orders"
-        response = self.client().post('/api/v1/orders',
+        response = self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order)
                                       )
         self.assertEqual(response.status_code, 201)
 
-        response2 = self.client().get('/api/v1/orders')
+        response2 = self.client().get('/api/v1/parcels')
         self.assertEqual(response2.status_code, 200)
 
     def test_fetch_all_orders_no_orders(self):
         "test for fetching no orders"
 
-        response = self.client().get('/api/v1/orders')
+        response = self.client().get('/api/v1/parcels')
         self.assertEqual(response.status_code, 200)
         self.assertIn('No parcel orders placed yet', str(response.data))
 
     def test_fetch_a_single_order(self):
         """tests that get method fetches a single order"""
-        response = self.client().post('/api/v1/orders',
+        response = self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order)
                                       )
         self.assertEqual(response.status_code, 201)
 
-        response2 = self.client().get("/api/v1/orders/1")
+        response2 = self.client().get("/api/v1/parcels/1")
         self.assertEqual(response2.status_code, 200)
 
     def test_get_an_id_that_is_not_in_the_list(self):
         '''Test to fetch single order with wrong id'''
-        response = self.client().post('/api/v1/orders',
+        response = self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order)
                                       )
         self.assertEqual(response.status_code, 201)
 
-        response2 = self.client().get("/api/v1/orders/2")
+        response2 = self.client().get("/api/v1/parcels/2")
         self.assertEqual(response2.status_code, 404)
         self.assertIn('parcel not found in our database please check the id and try again', str(response2.data))
 
