@@ -1,6 +1,6 @@
+[![Coverage Status](https://coveralls.io/repos/github/wasibani-roy/SendIT-challenge-2/badge.svg?branch=master)](https://coveralls.io/github/wasibani-roy/SendIT-challenge-2?branch=master)[![Build Status](https://travis-ci.org/wasibani-roy/SendIT-challenge-2.svg?branch=feature-make-parcel-order-%23161834974)](https://travis-ci.org/wasibani-roy/SendIT-challenge-2)
 # SendIT-challenge-2
-Is a parcel delivery service app 
-
+Is a parcel delivery service app
 
 ## Features
 The Program offers the following endpoints:
