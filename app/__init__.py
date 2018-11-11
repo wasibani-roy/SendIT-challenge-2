@@ -6,6 +6,7 @@ def create_app(config_name):
 
     app = Flask(__name__)
     app.config.from_object(app_config[config_name])
+    app.secret_key = "SendIT"
     # app.config.from_pyfile('config.py')
 
     """
@@ -14,6 +15,9 @@ def create_app(config_name):
     """
     from app.parcel_order import orders as orders_blueprints
     app.register_blueprint(orders_blueprints)
+
+    from app.users import users as users_blueprints
+    app.register_blueprint(users_blueprints)
 
     @app.errorhandler(405)
     def url_not_found(error):

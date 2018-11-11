@@ -1,9 +1,10 @@
 from flask import make_response, jsonify, request
 from .models import Order, orders_db
-from flask_restplus import reqparse, Resource
+import flask.views
+from app.helper import login_required
 
 
-class OrdersList(Resource):
+class OrdersList(flask.views.MethodView):
 
     def get(self):
         """
@@ -13,11 +14,14 @@ class OrdersList(Resource):
             return make_response(jsonify({"message": "No parcel orders placed yet"}), 200)
         return make_response(jsonify({"orders": orders_db}), 200)
 
+    @login_required
     def post(self):
         """ This method adds an order """
         parser = request.get_json()
         parcel_name = parser.get('parcel_name')
         destination = parser.get('destination')
+        user_name = parser.get('username')
+        receiver_name = parser.get('receiver')
         """ validate data sent """
         if not parcel_name or parcel_name.isspace():
             return make_response(jsonify({"message":
@@ -26,6 +30,14 @@ class OrdersList(Resource):
         if not destination or destination.isspace():
             return make_response(jsonify({"message":
                                               "Please add the destination of the parcel"}),
+                                 401)
+        if not user_name or user_name.isspace():
+            return make_response(jsonify({"message":
+                                              "Please add the name of person sending the parcel"}),
+                                 401)
+        if not receiver_name or receiver_name.isspace():
+            return make_response(jsonify({"message":
+                                              "Please add the recipient of the parcel"}),
                                  401)
 
         if len(str(destination)) < 4:
@@ -44,35 +56,60 @@ class OrdersList(Resource):
 
         present_location = 'headquaters'
         status = 'pending'
+        user_id = flask.session['username']
 
-        order = Order(order_id,
+        order = Order(order_id, user_id,user_name,receiver_name,
                       parcel_name, destination, present_location, status)
         order.place_an_order()
         return make_response(jsonify({"message": "Order has been created succesfully"}), 201)
 
 
-class SingleOrder(Resource):
-    def get(self, order_id):
+class SingleOrder(flask.views.MethodView):
+    def get(self, parcel_id):
         """
             This method returns a particular order
             of the id given to it from the list of available orders
         """
         order_item = None
         for order in orders_db:
-            if order['parcel_order_id'] == order_id:
+            if order['parcel_order_id'] == parcel_id:
                 order_item = order
                 return make_response(jsonify({"Order": order_item}), 200)
         return make_response(jsonify({"message": "parcel not found in our database please check the id and try again"}),
                              404)
 
-    def put(self, order_id, action):
+    def put(self, parcel_id):
         """
-             This method updates the status of an order.
+             This method updates the action of an order.
         """
+        parser = request.get_json()
+        action = parser.get('user_action')
+        if not action or action.isspace():
+            return make_response(jsonify({"message":
+                                              "Please add the action you want to carry out"}),
+                                 401)
+
         if action == "cancel":
             for count, order in enumerate(orders_db):
-                if order.get("parcel_order_id") == order_id:
-                    orders_db.pop(count)
-                    return make_response(jsonify({"message": "order has been deleted succesfully"}), 200)
-            return make_response(jsonify({"message": "Failled to delete the order"}), 200)
+                if order.get("parcel_order_id") == parcel_id:
+                    if order["status"] == "delivered":
+                        return make_response(jsonify({"message":"You are not allowed to cancel this order"}), 400)
+                    order["action"] = "Cancelled"
+                    return make_response(jsonify({"message": "order has been canceled succesfully"}), 200)
+            return make_response(jsonify({"message": "Failled to cancel the order"}), 200)
         return make_response(jsonify({"message":"Incorrect action specified"}), 404)
+
+class UserOrder(flask.views.MethodView):
+    def get(self, user_id):
+        """
+            This method returns a particular order
+            of the user_id given to it from the list of available orders
+        """
+        order_item = None
+        for order in orders_db:
+            if order['user_id'] == user_id:
+                order_item = order
+                return make_response(jsonify({"Order": order_item}), 200)
+        return make_response(jsonify({"message": "parcel not found in our database please check the id and try again"}),
+                             404)
+
