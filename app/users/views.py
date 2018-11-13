@@ -9,7 +9,7 @@ class UserRegistration(flask.views.MethodView):
              This method returns all orders created
         """
         if not users_data:
-            return make_response(jsonify({"message": "No parcel orders placed yet"}), 200)
+            return make_response(jsonify({"message": "No Registered users"}), 200)
         return make_response(jsonify({"orders": users_data}), 200)
 
     def post(self):
@@ -28,7 +28,7 @@ class UserRegistration(flask.views.MethodView):
                                  401)
         if not password or password.isspace():
             return make_response(jsonify({"message":
-                                              "Please add you,re user email"}),
+                                              "Please add you,re user password"}),
                                  401)
 
         if len(str(password)) < 4:
@@ -63,7 +63,7 @@ class UserLogin(flask.views.MethodView):
 
         if not password or password.isspace():
             return make_response(jsonify({"message":
-                                              "Please add you,re user email"}),
+                                              "Please add you,re password"}),
                                  401)
 
         if len(str(password)) < 4:

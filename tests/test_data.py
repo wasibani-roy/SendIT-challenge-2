@@ -24,6 +24,21 @@ user_register_data_invalid_email = {
     "email": "",
     "password": "12345"
 }
+user_register_data_invalid_username_len = {
+    "user_name": "roy",
+    "email": "roy@me.com",
+    "password": "12345"
+}
+user_register_data_invalid_password = {
+    "user_name": "wasibani",
+    "email": "roy@me.com",
+    "password": ""
+}
+user_register_data_invalid_password_len = {
+    "user_name": "wasibani",
+    "email": "roy@me.com",
+    "password": "roy"
+}
 user_register_data_invalid_username = {
     "user_name": "",
     "email": "roy@me.com",
@@ -31,6 +46,12 @@ user_register_data_invalid_username = {
 }
 user_login_data = {
     "user_name": "wasibani",
+    "password": "12345"
+}
+user_login_data_invalid_password = {
+    "user_name": "wasibani",
+}
+user_login_data_invalid_username = {
     "password": "12345"
 }
 user_login_data_invalid_name = {
@@ -42,4 +63,7 @@ user_action_data = {
 }
 user_action_data_invalid_action = {
     "user_action": "send"
+}
+user_action_data_no_action = {
+
 }

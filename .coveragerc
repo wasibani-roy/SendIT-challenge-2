@@ -9,4 +9,5 @@ omit =
     */__init__.py
     */config.py
     */helper.py
+    */test_app_endpoints.py
     */test_data.py

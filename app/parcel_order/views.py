@@ -63,7 +63,12 @@ class OrdersList(flask.views.MethodView):
             if user_id != existing_user['user_id']:
                 return make_response(jsonify({"message": "Invalid user_id please go and login to continue"}), 400)
 
-        order = Order(order_id, user_id,user_name,receiver_name,
+        """checking if the parcel item exists in our database"""
+        for existing_order in orders_db:
+            if parcel_name == existing_order["parcel_name"] and user_id == existing_order["user_id"]:
+                return make_response(jsonify({"message": "parcel order has been placed before"}), 400)
+
+        order = Order(order_id, user_id, user_name, receiver_name,
                       parcel_name, destination, present_location, status)
         order.place_an_order()
         return make_response(jsonify({"message": "Order has been created succesfully"}), 201)
@@ -98,11 +103,12 @@ class SingleOrder(flask.views.MethodView):
             for count, order in enumerate(orders_db):
                 if order.get("parcel_order_id") == parcel_id:
                     if order["status"] == "delivered":
-                        return make_response(jsonify({"message":"You are not allowed to cancel this order"}), 400)
+                        return make_response(jsonify({"message": "You are not allowed to cancel this order"}), 400)
                     order["action"] = "Cancelled"
                     return make_response(jsonify({"message": "order has been canceled succesfully"}), 200)
             return make_response(jsonify({"message": "Failled to cancel the order"}), 200)
-        return make_response(jsonify({"message":"Incorrect action specified"}), 400)
+        return make_response(jsonify({"message": "Incorrect action specified"}), 400)
+
 
 class UserOrder(flask.views.MethodView):
     def get(self, user_id):
@@ -117,4 +123,3 @@ class UserOrder(flask.views.MethodView):
                 return make_response(jsonify({"Order": order_item}), 200)
         return make_response(jsonify({"message": "parcel not found in our database please check the id and try again"}),
                              404)
-

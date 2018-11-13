@@ -39,15 +39,32 @@ class BaseCase(unittest.TestCase):
             method tests post endpoint status_code
         """
         self.client().post('/api/v1/signup',
-                                       content_type='application/json', data=json.dumps(user_register_data)
-                                       )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         self.client().post('/api/v1/login',
-                                      content_type='application/json', data=json.dumps(user_login_data)
-                                      )
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
         response = self.client().post('/api/v1/parcels/',
                                       content_type='application/json', data=json.dumps(post_an_order))
 
         self.assertEqual(response.status_code, 201)
+
+    def test_place_an_order_multiple_times(self):
+        """
+            method tests post an order with same data
+        """
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        self.client().post('/api/v1/parcels/',
+                                      content_type='application/json', data=json.dumps(post_an_order))
+        response = self.client().post('/api/v1/parcels/',
+                                      content_type='application/json', data=json.dumps(post_an_order))
+
+        self.assertEqual(response.status_code, 400)
 
     def test_place_order_with_empty_location(self):
         """ Test for empty post validation """
@@ -66,8 +83,8 @@ class BaseCase(unittest.TestCase):
                                        content_type='application/json', data=json.dumps(user_login_data)
                                        )
         response3 = self.client().post('/api/v1/parcels',
-                                      content_type='application/json', data=json.dumps(post_an_order)
-                                      )
+                                       content_type='application/json', data=json.dumps(post_an_order)
+                                       )
         self.assertEqual(response.status_code, 201)
 
         response4 = self.client().get('/api/v1/parcels')
@@ -89,8 +106,8 @@ class BaseCase(unittest.TestCase):
                                        content_type='application/json', data=json.dumps(user_login_data)
                                        )
         response3 = self.client().post('/api/v1/parcels',
-                                      content_type='application/json', data=json.dumps(post_an_order)
-                                      )
+                                       content_type='application/json', data=json.dumps(post_an_order)
+                                       )
         self.assertEqual(response3.status_code, 201)
 
         response4 = self.client().get("/api/v1/parcels/1")
@@ -99,15 +116,14 @@ class BaseCase(unittest.TestCase):
     def test_get_an_id_that_is_not_in_the_list(self):
         '''Test to fetch single order with wrong id'''
         self.client().post('/api/v1/signup',
-                                      content_type='application/json', data=json.dumps(user_register_data)
-                                      )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         self.client().post('/api/v1/login',
-                                       content_type='application/json', data=json.dumps(user_login_data)
-                                       )
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
         self.client().post('/api/v1/parcels',
-                                      content_type='application/json', data=json.dumps(post_an_order)
-                                      )
-        # self.assertEqual(response3.status_code, 201)
+                           content_type='application/json', data=json.dumps(post_an_order)
+                           )
 
         response2 = self.client().get("/api/v1/parcels/2")
         self.assertEqual(response2.status_code, 404)
@@ -116,54 +132,88 @@ class BaseCase(unittest.TestCase):
     def test_change_parcel_action_to_cancelled(self):
         '''Test to cancel an order'''
         self.client().post('/api/v1/signup',
-                                      content_type='application/json', data=json.dumps(user_register_data)
-                                      )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         self.client().post('/api/v1/login',
-                                       content_type='application/json', data=json.dumps(user_login_data)
-                                       )
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
         self.client().post('/api/v1/parcels',
-                                      content_type='application/json', data=json.dumps(post_an_order)
-                                      )
+                           content_type='application/json', data=json.dumps(post_an_order)
+                           )
         # self.assertEqual(response3.status_code, 201)
 
-        response2 = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json',\
+        response2 = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
                                       data=json.dumps(user_action_data))
         self.assertEqual(response2.status_code, 200)
 
     def test_change_parcel_action_to_cancelled_invalid_action(self):
         '''Test to cancel an order invalid action status'''
         self.client().post('/api/v1/signup',
-                                      content_type='application/json', data=json.dumps(user_register_data)
-                                      )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         self.client().post('/api/v1/login',
-                                       content_type='application/json', data=json.dumps(user_login_data)
-                                       )
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
         self.client().post('/api/v1/parcels',
-                                      content_type='application/json', data=json.dumps(post_an_order)
-                                      )
+                           content_type='application/json', data=json.dumps(post_an_order)
+                           )
         # self.assertEqual(response3.status_code, 201)
 
-        response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json',\
-                                      data=json.dumps(user_action_data_invalid_action))
+        response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
+                                     data=json.dumps(user_action_data_invalid_action))
         self.assertEqual(response.status_code, 400)
         self.assertIn('Incorrect action specified', str(response.data))
+
+    def test_change_parcel_action_to_cancelled_no_action(self):
+        '''Test to cancel an order invalid action status'''
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        self.client().post('/api/v1/parcels',
+                           content_type='application/json', data=json.dumps(post_an_order)
+                           )
+        # self.assertEqual(response3.status_code, 201)
+
+        response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
+                                     data=json.dumps(user_action_data_no_action))
+        self.assertEqual(response.status_code, 401)
+        self.assertIn('Please add the action you want to carry out', str(response.data))
+
     def test_user_registration(self):
         """
             method tests post endpoint status_code
         """
         response = self.client().post('/api/v1/signup',
-                                       content_type='application/json', data=json.dumps(user_register_data)
-                                       )
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
 
         self.assertEqual(response.status_code, 201)
+
+    def test_user_registration_multiple_registration(self):
+        """
+            method tests registering with same details
+        """
+        self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+        response = self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('username already exists', str(response.data))
 
     def test_user_registration_invalid_data_username(self):
         """
             method tests post endpoint status_code
         """
         response = self.client().post('/api/v1/signup',
-                                       content_type='application/json', data=json.dumps(user_register_data_invalid_username)
-                                       )
+                                      content_type='application/json',
+                                      data=json.dumps(user_register_data_invalid_username)
+                                      )
 
         self.assertEqual(response.status_code, 401)
 
@@ -172,21 +222,56 @@ class BaseCase(unittest.TestCase):
             method tests post endpoint status_code
         """
         response = self.client().post('/api/v1/signup',
-                                       content_type='application/json', data=json.dumps(user_register_data_invalid_email)
-                                       )
+                                      content_type='application/json', data=json.dumps(user_register_data_invalid_email)
+                                      )
 
         self.assertEqual(response.status_code, 401)
+
+    def test_user_registration_invalid_length_username(self):
+        """
+            method tests length of password validation
+        """
+        response = self.client().post('/api/v1/signup',
+                                      content_type='application/json',
+                                      data=json.dumps(user_register_data_invalid_username_len)
+                                      )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('username is to short', str(response.data))
+
+    def test_user_registration_invalid_data_password(self):
+        """
+            method tests post endpoint status_code
+        """
+        response = self.client().post('/api/v1/signup',
+                                      content_type='application/json',
+                                      data=json.dumps(user_register_data_invalid_password)
+                                      )
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_user_registration_invalid_length_password(self):
+        """
+            method tests length of password validation
+        """
+        response = self.client().post('/api/v1/signup',
+                                      content_type='application/json',
+                                      data=json.dumps(user_register_data_invalid_password_len)
+                                      )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('password is too short', str(response.data))
 
     def test_user_login(self):
         """
             method tests post endpoint status_code
         """
         self.client().post('/api/v1/signup',
-                                       content_type='application/json', data=json.dumps(user_register_data)
-                                       )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         response = self.client().post('/api/v1/login',
-                                       content_type='application/json', data=json.dumps(user_login_data)
-                                       )
+                                      content_type='application/json', data=json.dumps(user_login_data)
+                                      )
 
         self.assertEqual(response.status_code, 200)
 
@@ -195,13 +280,92 @@ class BaseCase(unittest.TestCase):
             method tests login with invalid username
         """
         self.client().post('/api/v1/signup',
-                                       content_type='application/json', data=json.dumps(user_register_data)
-                                       )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         response = self.client().post('/api/v1/login',
-                                       content_type='application/json', data=json.dumps(user_login_data_invalid_name)
-                                       )
+                                      content_type='application/json', data=json.dumps(user_login_data_invalid_name)
+                                      )
 
         self.assertIn('incorrect username and password', str(response.data))
+
+    def test_user_login_invalid_username_data(self):
+        """
+            method tests login with no username
+        """
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        response = self.client().post('/api/v1/login',
+                                      content_type='application/json', data=json.dumps(user_login_data_invalid_username)
+                                      )
+
+        self.assertIn('user_name field is required', str(response.data))
+
+    def test_user_login_invalid_password_data(self):
+        """
+            method tests login with no password
+        """
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        response = self.client().post('/api/v1/login',
+                                      content_type='application/json', data=json.dumps(user_login_data_invalid_password)
+                                      )
+
+        self.assertIn('Please add you,re password', str(response.data))
+
+    def test_fetch_a_users_orders(self):
+        """tests that get method fetches a single order"""
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        self.client().post('/api/v1/parcels',
+                           content_type='application/json', data=json.dumps(post_an_order)
+                           )
+
+        response = self.client().get("/api/v1/users/1/parcels")
+        self.assertEqual(response.status_code, 200)
+
+    def test_fetch_a_users_orders_invalid_id(self):
+        """tests that get method fetches a single order"""
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        self.client().post('/api/v1/parcels',
+                           content_type='application/json', data=json.dumps(post_an_order)
+                           )
+
+        response = self.client().get("/api/v1/users/2/parcels")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_user(self):
+        """
+            method tests getting all registered users
+        """
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        response = self.client().get('/api/v1/signup/')
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_no_user(self):
+        """
+            method tests getting no registered users
+        """
+        response = self.client().get('/api/v1/signup/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('No Registered users', str(response.data))
 
     def tearDown(self):
         """
