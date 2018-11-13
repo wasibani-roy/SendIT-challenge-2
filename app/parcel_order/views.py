@@ -1,7 +1,8 @@
 from flask import make_response, jsonify, request
 from .models import Order, orders_db
+from app.users.models import users_data
 import flask.views
-from app.helper import login_required
+from app.helper import validate_data
 
 
 class OrdersList(flask.views.MethodView):
@@ -14,7 +15,7 @@ class OrdersList(flask.views.MethodView):
             return make_response(jsonify({"message": "No parcel orders placed yet"}), 200)
         return make_response(jsonify({"orders": orders_db}), 200)
 
-    @login_required
+    # @login_required
     def post(self):
         """ This method adds an order """
         parser = request.get_json()
@@ -22,6 +23,7 @@ class OrdersList(flask.views.MethodView):
         destination = parser.get('destination')
         user_name = parser.get('username')
         receiver_name = parser.get('receiver')
+        user_id = parser.get('user_id')
         """ validate data sent """
         if not parcel_name or parcel_name.isspace():
             return make_response(jsonify({"message":
@@ -56,7 +58,10 @@ class OrdersList(flask.views.MethodView):
 
         present_location = 'headquaters'
         status = 'pending'
-        user_id = flask.session['username']
+
+        for existing_user in users_data:
+            if user_id != existing_user['user_id']:
+                return make_response(jsonify({"message": "Invalid user_id please go and login to continue"}), 400)
 
         order = Order(order_id, user_id,user_name,receiver_name,
                       parcel_name, destination, present_location, status)
@@ -82,8 +87,8 @@ class SingleOrder(flask.views.MethodView):
         """
              This method updates the action of an order.
         """
-        parser = request.get_json()
-        action = parser.get('user_action')
+        data = request.get_json()
+        action = data.get('user_action')
         if not action or action.isspace():
             return make_response(jsonify({"message":
                                               "Please add the action you want to carry out"}),
@@ -97,7 +102,7 @@ class SingleOrder(flask.views.MethodView):
                     order["action"] = "Cancelled"
                     return make_response(jsonify({"message": "order has been canceled succesfully"}), 200)
             return make_response(jsonify({"message": "Failled to cancel the order"}), 200)
-        return make_response(jsonify({"message":"Incorrect action specified"}), 404)
+        return make_response(jsonify({"message":"Incorrect action specified"}), 400)
 
 class UserOrder(flask.views.MethodView):
     def get(self, user_id):

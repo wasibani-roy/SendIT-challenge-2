@@ -1,9 +1,10 @@
-import unittest
+import unittest, flask
 from app import create_app
-from flask import current_app
+from flask import current_app, session
 import json
 from app.parcel_order.models import Order, orders_db
 from app.parcel.models import parcel_items
+from app.users.models import users_data
 from .test_data import *
 
 
@@ -23,12 +24,12 @@ class BaseCase(unittest.TestCase):
         self.app_context.push()
         self.client = self.app.test_client
 
-    def test_model_function(self):
-        """Tests if the dummy data provided is
-            an instance of the order class
-        """
-        self.order = Order(1, "roy parcel", "Hoima", "Kampala", "pending")
-        self.assertIsInstance(self.order, Order)
+    # def test_model_function(self):
+    #     """Tests if the dummy data provided is
+    #         an instance of the order class
+    #     """
+    #     self.order = Order(1, "roy parcel", "Hoima", "Kampala", "pending")
+    #     self.assertIsInstance(self.order, Order)
 
     def test_app_exixts(self):
         self.assertFalse(current_app is None)
@@ -37,7 +38,13 @@ class BaseCase(unittest.TestCase):
         """
             method tests post endpoint status_code
         """
-        response = self.client().post('/api/v1/parcels',
+        self.client().post('/api/v1/signup',
+                                       content_type='application/json', data=json.dumps(user_register_data)
+                                       )
+        self.client().post('/api/v1/login',
+                                      content_type='application/json', data=json.dumps(user_login_data)
+                                      )
+        response = self.client().post('/api/v1/parcels/',
                                       content_type='application/json', data=json.dumps(post_an_order))
 
         self.assertEqual(response.status_code, 201)
@@ -52,13 +59,19 @@ class BaseCase(unittest.TestCase):
 
     def test_fetch_all_orders(self):
         "test for fetching available orders"
-        response = self.client().post('/api/v1/parcels',
+        response = self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+        response2 = self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data)
+                                       )
+        response3 = self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order)
                                       )
         self.assertEqual(response.status_code, 201)
 
-        response2 = self.client().get('/api/v1/parcels')
-        self.assertEqual(response2.status_code, 200)
+        response4 = self.client().get('/api/v1/parcels')
+        self.assertEqual(response4.status_code, 200)
 
     def test_fetch_all_orders_no_orders(self):
         "test for fetching no orders"
@@ -69,24 +82,126 @@ class BaseCase(unittest.TestCase):
 
     def test_fetch_a_single_order(self):
         """tests that get method fetches a single order"""
-        response = self.client().post('/api/v1/parcels',
+        response = self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+        response2 = self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data)
+                                       )
+        response3 = self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order)
                                       )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response3.status_code, 201)
 
-        response2 = self.client().get("/api/v1/parcels/1")
-        self.assertEqual(response2.status_code, 200)
+        response4 = self.client().get("/api/v1/parcels/1")
+        self.assertEqual(response4.status_code, 200)
 
     def test_get_an_id_that_is_not_in_the_list(self):
         '''Test to fetch single order with wrong id'''
-        response = self.client().post('/api/v1/parcels',
+        self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+        self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data)
+                                       )
+        self.client().post('/api/v1/parcels',
                                       content_type='application/json', data=json.dumps(post_an_order)
                                       )
-        self.assertEqual(response.status_code, 201)
+        # self.assertEqual(response3.status_code, 201)
 
         response2 = self.client().get("/api/v1/parcels/2")
         self.assertEqual(response2.status_code, 404)
         self.assertIn('parcel not found in our database please check the id and try again', str(response2.data))
+
+    def test_change_parcel_action_to_cancelled(self):
+        '''Test to cancel an order'''
+        self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+        self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data)
+                                       )
+        self.client().post('/api/v1/parcels',
+                                      content_type='application/json', data=json.dumps(post_an_order)
+                                      )
+        # self.assertEqual(response3.status_code, 201)
+
+        response2 = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json',\
+                                      data=json.dumps(user_action_data))
+        self.assertEqual(response2.status_code, 200)
+
+    def test_change_parcel_action_to_cancelled_invalid_action(self):
+        '''Test to cancel an order invalid action status'''
+        self.client().post('/api/v1/signup',
+                                      content_type='application/json', data=json.dumps(user_register_data)
+                                      )
+        self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data)
+                                       )
+        self.client().post('/api/v1/parcels',
+                                      content_type='application/json', data=json.dumps(post_an_order)
+                                      )
+        # self.assertEqual(response3.status_code, 201)
+
+        response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json',\
+                                      data=json.dumps(user_action_data_invalid_action))
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Incorrect action specified', str(response.data))
+    def test_user_registration(self):
+        """
+            method tests post endpoint status_code
+        """
+        response = self.client().post('/api/v1/signup',
+                                       content_type='application/json', data=json.dumps(user_register_data)
+                                       )
+
+        self.assertEqual(response.status_code, 201)
+
+    def test_user_registration_invalid_data_username(self):
+        """
+            method tests post endpoint status_code
+        """
+        response = self.client().post('/api/v1/signup',
+                                       content_type='application/json', data=json.dumps(user_register_data_invalid_username)
+                                       )
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_user_registration_invalid_data_email(self):
+        """
+            method tests post endpoint status_code
+        """
+        response = self.client().post('/api/v1/signup',
+                                       content_type='application/json', data=json.dumps(user_register_data_invalid_email)
+                                       )
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_user_login(self):
+        """
+            method tests post endpoint status_code
+        """
+        self.client().post('/api/v1/signup',
+                                       content_type='application/json', data=json.dumps(user_register_data)
+                                       )
+        response = self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data)
+                                       )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_login_invalid_username(self):
+        """
+            method tests login with invalid username
+        """
+        self.client().post('/api/v1/signup',
+                                       content_type='application/json', data=json.dumps(user_register_data)
+                                       )
+        response = self.client().post('/api/v1/login',
+                                       content_type='application/json', data=json.dumps(user_login_data_invalid_name)
+                                       )
+
+        self.assertIn('incorrect username and password', str(response.data))
 
     def tearDown(self):
         """
@@ -94,3 +209,4 @@ class BaseCase(unittest.TestCase):
         """
         orders_db[:] = []
         parcel_items[:] = []
+        users_data[:] = []

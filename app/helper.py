@@ -8,6 +8,11 @@ def login_required(method):
         if 'username' in flask.session:
             return method(*args, **kwargs)
         else:
-            flask.flash("A login is required to see the page!")
-            return make_response(jsonify({"message": "Please log in to access this resource"}), 400)
+            return make_response(jsonify({"message": "Please log in to access this resource"}), 401)
     return wrapper
+
+def validate_data(key):
+    if not key or key.isspace():
+        return make_response(jsonify({"message":
+                                          "{} field is required".format(key)}),
+                             401)
