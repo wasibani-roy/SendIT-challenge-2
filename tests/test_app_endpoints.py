@@ -1,9 +1,8 @@
-import unittest, flask
+import unittest
 from app import create_app
-from flask import current_app, session
+from flask import current_app
 import json
 from app.parcel_order.models import Order, orders_db
-from app.parcel.models import parcel_items
 from app.users.models import users_data
 from .test_data import *
 
@@ -24,12 +23,20 @@ class BaseCase(unittest.TestCase):
         self.app_context.push()
         self.client = self.app.test_client
 
-    # def test_model_function(self):
-    #     """Tests if the dummy data provided is
-    #         an instance of the order class
-    #     """
-    #     self.order = Order(1, "roy parcel", "Hoima", "Kampala", "pending")
-    #     self.assertIsInstance(self.order, Order)
+    def test_model_function(self):
+        """Tests if the dummy data provided is
+            an instance of the order class
+        """
+        self.order = Order(1, 1, "wasibani", "danny", "roy parcel", "Hoima", "Kampala", "pending")
+        self.assertIsInstance(self.order, Order)
+
+    def get_token(self):
+        ''' Generates a token to be used for tests'''
+        response = self.client().post('/api/v1/login',
+                                      data=json.dumps(user_login_data),
+                                      content_type='application/json')
+        data = json.loads(response.data.decode())
+        return 'Bearer ' + data['access token']
 
     def test_app_exixts(self):
         self.assertFalse(current_app is None)
@@ -45,7 +52,8 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         response = self.client().post('/api/v1/parcels/',
-                                      content_type='application/json', data=json.dumps(post_an_order))
+                                      content_type='application/json', data=json.dumps(post_an_order),
+                                      headers={'Authorization': self.get_token()})
 
         self.assertEqual(response.status_code, 201)
 
@@ -60,35 +68,60 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels/',
-                                      content_type='application/json', data=json.dumps(post_an_order))
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()})
         response = self.client().post('/api/v1/parcels/',
-                                      content_type='application/json', data=json.dumps(post_an_order))
+                                      content_type='application/json', data=json.dumps(post_an_order),
+                                      headers={'Authorization': self.get_token()})
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_place_an_order_no_parcel_name(self):
+        """
+            method tests post endpoint status_code
+        """
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        response = self.client().post('/api/v1/parcels/',
+                                      content_type='application/json', data=json.dumps(post_an_order_no_parcelname),
+                                      headers={'Authorization': self.get_token()})
 
         self.assertEqual(response.status_code, 400)
 
     def test_place_order_with_empty_location(self):
         """ Test for empty post validation """
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
         response = self.client().post("/api/v1/parcels",
                                       content_type='application/json',
-                                      data=json.dumps(post_with_empty_destination))
-        self.assertEqual(response.status_code, 401)
+                                      data=json.dumps(post_with_empty_destination),
+                                      headers={'Authorization': self.get_token()})
+        self.assertEqual(response.status_code, 400)
         self.assertIn('Please add the destination of the parcel', str(response.data))
 
     def test_fetch_all_orders(self):
         "test for fetching available orders"
-        response = self.client().post('/api/v1/signup',
-                                      content_type='application/json', data=json.dumps(user_register_data)
-                                      )
-        response2 = self.client().post('/api/v1/login',
-                                       content_type='application/json', data=json.dumps(user_login_data)
-                                       )
-        response3 = self.client().post('/api/v1/parcels',
-                                       content_type='application/json', data=json.dumps(post_an_order)
-                                       )
-        self.assertEqual(response.status_code, 201)
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        self.client().post('/api/v1/parcels',
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
+                           )
 
-        response4 = self.client().get('/api/v1/parcels')
-        self.assertEqual(response4.status_code, 200)
+        response = self.client().get('/api/v1/parcels')
+        self.assertEqual(response.status_code, 200)
 
     def test_fetch_all_orders_no_orders(self):
         "test for fetching no orders"
@@ -106,7 +139,8 @@ class BaseCase(unittest.TestCase):
                                        content_type='application/json', data=json.dumps(user_login_data)
                                        )
         response3 = self.client().post('/api/v1/parcels',
-                                       content_type='application/json', data=json.dumps(post_an_order)
+                                       content_type='application/json', data=json.dumps(post_an_order),
+                                       headers={'Authorization': self.get_token()}
                                        )
         self.assertEqual(response3.status_code, 201)
 
@@ -122,7 +156,8 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order)
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
                            )
 
         response2 = self.client().get("/api/v1/parcels/2")
@@ -138,9 +173,9 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order)
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
                            )
-        # self.assertEqual(response3.status_code, 201)
 
         response2 = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
                                       data=json.dumps(user_action_data))
@@ -155,9 +190,9 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order)
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
                            )
-        # self.assertEqual(response3.status_code, 201)
 
         response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
                                      data=json.dumps(user_action_data_invalid_action))
@@ -173,14 +208,33 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order)
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
                            )
         # self.assertEqual(response3.status_code, 201)
 
         response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
                                      data=json.dumps(user_action_data_no_action))
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
         self.assertIn('Please add the action you want to carry out', str(response.data))
+
+    def test_change_parcel_action_to_invalid_parcel_id(self):
+        '''Test to cancel an order invalid parcel id status'''
+        self.client().post('/api/v1/signup',
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
+        self.client().post('/api/v1/login',
+                           content_type='application/json', data=json.dumps(user_login_data)
+                           )
+        self.client().post('/api/v1/parcels',
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
+                           )
+
+        response = self.client().put("/api/v1/parcels/2/cancel", content_type='application/json', \
+                                     data=json.dumps(user_action_data))
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Failled to cancel the order', str(response.data))
 
     def test_user_registration(self):
         """
@@ -197,8 +251,8 @@ class BaseCase(unittest.TestCase):
             method tests registering with same details
         """
         self.client().post('/api/v1/signup',
-                                      content_type='application/json', data=json.dumps(user_register_data)
-                                      )
+                           content_type='application/json', data=json.dumps(user_register_data)
+                           )
         response = self.client().post('/api/v1/signup',
                                       content_type='application/json', data=json.dumps(user_register_data)
                                       )
@@ -215,7 +269,7 @@ class BaseCase(unittest.TestCase):
                                       data=json.dumps(user_register_data_invalid_username)
                                       )
 
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
 
     def test_user_registration_invalid_data_email(self):
         """
@@ -225,7 +279,7 @@ class BaseCase(unittest.TestCase):
                                       content_type='application/json', data=json.dumps(user_register_data_invalid_email)
                                       )
 
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
 
     def test_user_registration_invalid_length_username(self):
         """
@@ -248,7 +302,7 @@ class BaseCase(unittest.TestCase):
                                       data=json.dumps(user_register_data_invalid_password)
                                       )
 
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
 
     def test_user_registration_invalid_length_password(self):
         """
@@ -264,7 +318,7 @@ class BaseCase(unittest.TestCase):
 
     def test_user_login(self):
         """
-            method tests post endpoint status_code
+            method tests Login endpoint status_code
         """
         self.client().post('/api/v1/signup',
                            content_type='application/json', data=json.dumps(user_register_data)
@@ -312,7 +366,7 @@ class BaseCase(unittest.TestCase):
                                       content_type='application/json', data=json.dumps(user_login_data_invalid_password)
                                       )
 
-        self.assertIn('Please add you,re password', str(response.data))
+        self.assertIn('Please add your user password', str(response.data))
 
     def test_fetch_a_users_orders(self):
         """tests that get method fetches a single order"""
@@ -323,7 +377,8 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order)
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
                            )
 
         response = self.client().get("/api/v1/users/1/parcels")
@@ -338,7 +393,8 @@ class BaseCase(unittest.TestCase):
                            content_type='application/json', data=json.dumps(user_login_data)
                            )
         self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order)
+                           content_type='application/json', data=json.dumps(post_an_order),
+                           headers={'Authorization': self.get_token()}
                            )
 
         response = self.client().get("/api/v1/users/2/parcels")
@@ -372,5 +428,4 @@ class BaseCase(unittest.TestCase):
         Method to tidy up lists after the test is run
         """
         orders_db[:] = []
-        parcel_items[:] = []
         users_data[:] = []
