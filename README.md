@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/wasibani-roy/SendIT-challenge-2/badge.svg?branch=master)](https://coveralls.io/github/wasibani-roy/SendIT-challenge-2?branch=master)[![Build Status](https://travis-ci.org/wasibani-roy/SendIT-challenge-2.svg?branch=feature-make-parcel-order-%23161834974)](https://travis-ci.org/wasibani-roy/SendIT-challenge-2)
+[![Build Status](https://travis-ci.org/wasibani-roy/SendIT-challenge-2.svg?branch=feature-make-parcel-order-%23161834974)](https://travis-ci.org/wasibani-roy/SendIT-challenge-2)[![Coverage Status](https://coveralls.io/repos/github/wasibani-roy/SendIT-challenge-2/badge.svg?branch=feature-make-parcel-order-%23161834974)](https://coveralls.io/github/wasibani-roy/SendIT-challenge-2?branch=feature-make-parcel-order-%23161834974)[![Maintainability](https://api.codeclimate.com/v1/badges/2c1a80866d94de0dc9ed/maintainability)](https://codeclimate.com/github/wasibani-roy/SendIT-challenge-2/maintainability)
 # SendIT-challenge-2
 Is a parcel delivery service app
 

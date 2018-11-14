@@ -9,7 +9,7 @@ class UserRegistration(flask.views.MethodView):
              This method returns all orders created
         """
         if not users_data:
-            return make_response(jsonify({"message": "No parcel orders placed yet"}), 200)
+            return make_response(jsonify({"message": "No Registered users"}), 200)
         return make_response(jsonify({"orders": users_data}), 200)
 
     def post(self):
@@ -28,7 +28,7 @@ class UserRegistration(flask.views.MethodView):
                                  401)
         if not password or password.isspace():
             return make_response(jsonify({"message":
-                                              "Please add you,re user email"}),
+                                              "Please add you,re user password"}),
                                  401)
 
         if len(str(password)) < 4:
@@ -52,7 +52,6 @@ class UserRegistration(flask.views.MethodView):
 
 class UserLogin(flask.views.MethodView):
     def post(self):
-        flask.session.pop('username', None)
         parser = request.get_json()
         user_name = parser.get('user_name')
         password = parser.get('password')
@@ -64,7 +63,7 @@ class UserLogin(flask.views.MethodView):
 
         if not password or password.isspace():
             return make_response(jsonify({"message":
-                                              "Please add you,re user email"}),
+                                              "Please add you,re password"}),
                                  401)
 
         if len(str(password)) < 4:
@@ -78,9 +77,9 @@ class UserLogin(flask.views.MethodView):
             if user_name != existing_user['user_name']:
                 if password != existing_user['password']:
                     return make_response(jsonify({"message": "username and password dont match"}), 400)
-            if password == existing_user['password']:
+            if password == existing_user['password'] and user_name == existing_user["user_name"]:
                 flask.session['username'] = User.get_user_id(user_name)
                 # flask.session['user_id'] = User.get_user_id(user_name)
-                return make_response(jsonify({"message": "You have successfully logged in"}), 200)
+                return make_response(jsonify({"message": "You have successfully logged in this is you're user_id "+str(flask.session['username'])}), 200)
 
         return make_response(jsonify({"message": "incorrect username and password"}), 200)
