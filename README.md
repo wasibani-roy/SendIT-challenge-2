@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wasibani-roy/SendIT-challenge-2.svg?branch=feature-make-parcel-order-%23161834974)](https://travis-ci.org/wasibani-roy/SendIT-challenge-2)[![Coverage Status](https://coveralls.io/repos/github/wasibani-roy/SendIT-challenge-2/badge.svg?branch=feature-make-parcel-order-%23161834974)](https://coveralls.io/github/wasibani-roy/SendIT-challenge-2?branch=feature-make-parcel-order-%23161834974)[![Maintainability](https://api.codeclimate.com/v1/badges/2c1a80866d94de0dc9ed/maintainability)](https://codeclimate.com/github/wasibani-roy/SendIT-challenge-2/maintainability)
+[![Build Status](https://travis-ci.org/wasibani-roy/SendIT-challenge-2.svg?branch=api)](https://travis-ci.org/wasibani-roy/SendIT-challenge-2)[![Coverage Status](https://coveralls.io/repos/github/wasibani-roy/SendIT-challenge-2/badge.svg?branch=api)](https://coveralls.io/github/wasibani-roy/SendIT-challenge-2?branch=api)[![Maintainability](https://api.codeclimate.com/v1/badges/2c1a80866d94de0dc9ed/maintainability)](https://codeclimate.com/github/wasibani-roy/SendIT-challenge-2/maintainability)
 # SendIT-challenge-2
 Is a parcel delivery service app
 
@@ -41,6 +41,8 @@ After cloning, you will have a folder named `SendIT-challenge-2`
 ## Testing
 Run pytest in the directory of the project to run tests
 
+## Heroku link
+https://wasibani-roy-sendit.herokuapp.com/
 
 ## Author
 Roy
