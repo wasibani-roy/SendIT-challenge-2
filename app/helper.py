@@ -9,10 +9,14 @@ def login_required(method):
             return method(*args, **kwargs)
         else:
             return make_response(jsonify({"message": "Please log in to access this resource"}), 401)
+
     return wrapper
+
 
 def validate_data(key):
     if not key or key.isspace():
-        return make_response(jsonify({"message":
-                                          "{} field is required".format(key)}),
-                             401)
+        return True
+
+def validate_data_length(key):
+    if len(str(key)) < 4:
+        return True

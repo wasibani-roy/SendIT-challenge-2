@@ -2,7 +2,8 @@ from flask import make_response, jsonify, request
 from .models import Order, orders_db
 from app.users.models import users_data
 import flask.views
-from app.helper import validate_data
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from app.helper import validate_data, validate_data_length
 
 
 class OrdersList(flask.views.MethodView):
@@ -14,43 +15,30 @@ class OrdersList(flask.views.MethodView):
         if not orders_db:
             return make_response(jsonify({"message": "No parcel orders placed yet"}), 200)
         return make_response(jsonify({"orders": orders_db}), 200)
-
-    # @login_required
+    @jwt_required
     def post(self):
         """ This method adds an order """
+
+        """Get the current user id and name"""
+        current_user = get_jwt_identity()
         parser = request.get_json()
         parcel_name = parser.get('parcel_name')
         destination = parser.get('destination')
-        user_name = parser.get('username')
         receiver_name = parser.get('receiver')
-        user_id = parser.get('user_id')
         """ validate data sent """
-        if not parcel_name or parcel_name.isspace():
-            return make_response(jsonify({"message":
-                                              "parcel_name field is required"}),
-                                 401)
-        if not destination or destination.isspace():
-            return make_response(jsonify({"message":
-                                              "Please add the destination of the parcel"}),
-                                 401)
-        if not user_name or user_name.isspace():
-            return make_response(jsonify({"message":
-                                              "Please add the name of person sending the parcel"}),
-                                 401)
-        if not receiver_name or receiver_name.isspace():
-            return make_response(jsonify({"message":
-                                              "Please add the recipient of the parcel"}),
-                                 401)
+        if validate_data(parcel_name):
+            return make_response(jsonify({'message': 'parcel_name is required'}), 400)
+        if validate_data(destination):
+            return make_response(jsonify({'message': 'Please add the destination of the parcel'}), 400)
+        if validate_data(receiver_name):
+            return make_response(jsonify({'message': 'receiver is required'}), 400)
 
-        if len(str(destination)) < 4:
-            return {'message': 'Destination is too short.'}, 400
+        if validate_data_length(destination):
+            return make_response(jsonify({'message': 'Destination is to short'}), 400)
 
-        if len(str(parcel_name)) < 4:
-            return {'message': 'parcel_name is too short.'}, 400
+        if validate_data_length(parcel_name):
+            return make_response(jsonify({'message': 'Destination is to short'}), 400)
 
-        """checking if the parcel item has been created and
-           parcel_id exists in our database
-        """
 
         if len(orders_db) == 0:
             order_id = len(orders_db) + 1
@@ -58,6 +46,8 @@ class OrdersList(flask.views.MethodView):
 
         present_location = 'headquaters'
         status = 'pending'
+        user_id = current_user['user_id']
+        user_name = current_user['user_name']
 
         for existing_user in users_data:
             if user_id != existing_user['user_id']:
@@ -97,16 +87,14 @@ class SingleOrder(flask.views.MethodView):
         if not action or action.isspace():
             return make_response(jsonify({"message":
                                               "Please add the action you want to carry out"}),
-                                 401)
+                                 400)
 
         if action == "cancel":
             for count, order in enumerate(orders_db):
                 if order.get("parcel_order_id") == parcel_id:
-                    if order["status"] == "delivered":
-                        return make_response(jsonify({"message": "You are not allowed to cancel this order"}), 400)
                     order["action"] = "Cancelled"
                     return make_response(jsonify({"message": "order has been canceled succesfully"}), 200)
-            return make_response(jsonify({"message": "Failled to cancel the order"}), 200)
+            return make_response(jsonify({"message": "Failled to cancel the order"}), 400)
         return make_response(jsonify({"message": "Incorrect action specified"}), 400)
 
 

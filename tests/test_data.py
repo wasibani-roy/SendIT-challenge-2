@@ -6,6 +6,20 @@ post_an_order = {
     "user_id":1
 
 }
+post_an_order_no_username = {
+    "parcel_name": "wardrobe",
+    "destination": "mutundwe",
+    "receiver": "danny1",
+    "user_id":1
+
+}
+post_an_order_no_parcelname = {
+    "destination": "mutundwe",
+    "username": "wasibani",
+    "receiver": "danny1",
+    "user_id":1
+
+}
 post_with_empty_destination = {
     "parcel_name": "roy 234",
     "username": "wasibani",
