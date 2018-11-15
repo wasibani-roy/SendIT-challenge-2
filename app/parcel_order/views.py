@@ -37,7 +37,7 @@ class OrdersList(flask.views.MethodView):
             return make_response(jsonify({'message': 'Destination is to short'}), 400)
 
         if validate_data_length(parcel_name):
-            return make_response(jsonify({'message': 'Destination is to short'}), 400)
+            return make_response(jsonify({'message': 'parcel_name is to short'}), 400)
 
 
         if len(orders_db) == 0:
@@ -84,10 +84,8 @@ class SingleOrder(flask.views.MethodView):
         """
         data = request.get_json()
         action = data.get('user_action')
-        if not action or action.isspace():
-            return make_response(jsonify({"message":
-                                              "Please add the action you want to carry out"}),
-                                 400)
+        if validate_data(action):
+            return make_response(jsonify({'message': 'Please add the action you want to carry out'}), 400)
 
         if action == "cancel":
             for count, order in enumerate(orders_db):
