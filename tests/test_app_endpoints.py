@@ -177,46 +177,10 @@ class BaseCase(unittest.TestCase):
                            headers={'Authorization': self.get_token()}
                            )
 
-        response2 = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
-                                      data=json.dumps(user_action_data))
+        response2 = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json')
         self.assertEqual(response2.status_code, 200)
 
-    def test_change_parcel_action_to_cancelled_invalid_action(self):
-        '''Test to cancel an order invalid action status'''
-        self.client().post('/api/v1/signup',
-                           content_type='application/json', data=json.dumps(user_register_data)
-                           )
-        self.client().post('/api/v1/login',
-                           content_type='application/json', data=json.dumps(user_login_data)
-                           )
-        self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order),
-                           headers={'Authorization': self.get_token()}
-                           )
 
-        response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
-                                     data=json.dumps(user_action_data_invalid_action))
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('Incorrect action specified', str(response.data))
-
-    def test_change_parcel_action_to_cancelled_no_action(self):
-        '''Test to cancel an order invalid action status'''
-        self.client().post('/api/v1/signup',
-                           content_type='application/json', data=json.dumps(user_register_data)
-                           )
-        self.client().post('/api/v1/login',
-                           content_type='application/json', data=json.dumps(user_login_data)
-                           )
-        self.client().post('/api/v1/parcels',
-                           content_type='application/json', data=json.dumps(post_an_order),
-                           headers={'Authorization': self.get_token()}
-                           )
-        # self.assertEqual(response3.status_code, 201)
-
-        response = self.client().put("/api/v1/parcels/1/cancel", content_type='application/json', \
-                                     data=json.dumps(user_action_data_no_action))
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('Please add the action you want to carry out', str(response.data))
 
     def test_change_parcel_action_to_invalid_parcel_id(self):
         '''Test to cancel an order invalid parcel id status'''

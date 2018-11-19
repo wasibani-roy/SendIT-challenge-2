@@ -82,18 +82,14 @@ class SingleOrder(flask.views.MethodView):
         """
              This method updates the action of an order.
         """
-        data = request.get_json()
-        action = data.get('user_action')
-        if validate_data(action):
-            return make_response(jsonify({'message': 'Please add the action you want to carry out'}), 400)
 
-        if action == "cancel":
-            for count, order in enumerate(orders_db):
-                if order.get("parcel_order_id") == parcel_id:
-                    order["action"] = "Cancelled"
-                    return make_response(jsonify({"message": "order has been canceled succesfully"}), 200)
-            return make_response(jsonify({"message": "Failled to cancel the order"}), 400)
-        return make_response(jsonify({"message": "Incorrect action specified"}), 400)
+
+        for count, order in enumerate(orders_db):
+            if order.get("parcel_order_id") == parcel_id:
+                order["status"] = "Cancelled"
+                return make_response(jsonify({"message": "order has been canceled succesfully"}), 200)
+        return make_response(jsonify({"message": "Failled to cancel the order"}), 400)
+
 
 
 class UserOrder(flask.views.MethodView):

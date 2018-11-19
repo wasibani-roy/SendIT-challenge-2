@@ -9,7 +9,7 @@ class UserRegistration(flask.views.MethodView):
 
     def get(self):
         """
-             This method returns all orders created
+             This method returns all users created
         """
         if not users_data:
             return make_response(jsonify({"message": "No Registered users"}), 200)
