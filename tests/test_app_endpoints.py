@@ -1,13 +1,9 @@
 import unittest
 from app import create_app
-from flask import current_app as app
-import json, os
+import json
 from app.database import Database
 from .test_data import *
-user = {"username":"wasibani", "email":"wasibani@me.com", "password":"12345"}
-user_admin_reg = {"username":"admin", "email":"admin@me.com", "password":"admin"}
-user_log = {"username":"wasibani", "password":"12345"}
-user_admin = {"username":"admin", "password":"admin"}
+
 class BaseCase(unittest.TestCase):
     """class holds all the unittests for the endpoints"""
 
@@ -128,9 +124,134 @@ class BaseCase(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('Username must contain only characters', str(response.data))
 
+    def test_post_parcel_order(self):
+        """method for testing posting an order endpoint"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data_invalid_name), content_type='application/json')
+        response = self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('you have succesfully placed order', str(response.data))
+
+    def test_post_parcel_order_invalid_data(self):
+        """method for testing post order endpoint invalid data"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data_invalid_name), content_type='application/json')
+        response = self.client.post('api/v2/parcels', data=json.dumps(post_an_order_invalid_data_post), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.assertEqual(response.status_code, 400)
+        # self.assertIn('you have succesfully placed order', str(response.data))
+
+    def test_post_parcel_order_multiple_times(self):
+        """method for testing post order endpoint invalid data"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order),
+                         content_type='application/json',
+                         headers={'Authorization': self.get_token()})
+        response = self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.assertEqual(response.status_code, 403)
+        self.assertIn('Order has already been placed', str(response.data))
+
+    def test_get_parcel_orders_admin(self):
+        """method for testing Admin get all orders"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(admin_login_data), content_type='application/json')
+        response = self.client.get('/api/v2/parcels', content_type='application/json',
+                                    headers={'Authorization': self.get_admin_token()})
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_parcel_orders_admin_no_authorised(self):
+        """method for testing Admin get all orders"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        response = self.client.get('/api/v2/parcels', content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_parcel_orders_admin_no_orders(self):
+        """method for testing Admin get no orders"""
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(admin_login_data), content_type='application/json')
+        response = self.client.get('/api/v2/parcels', content_type='application/json',
+                                    headers={'Authorization': self.get_admin_token()})
+        self.assertEqual(response.status_code, 200)
+
+    def test_set_present_location(self):
+        """method for testing Admin change present location"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        response = self.client.put('api/v2/parcels/1/presentLocation', data=json.dumps(admin_change_location), content_type='application/json',
+                                    headers={'Authorization': self.get_admin_token()})
+        self.assertEqual(response.status_code, 200)
+
+    def test_set_present_location_no_location(self):
+        """method for testing Admin change present location no location"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        response = self.client.put('api/v2/parcels/1/presentLocation',  content_type='application/json',
+                                    headers={'Authorization': self.get_admin_token()})
+        self.assertEqual(response.status_code, 400)
+
+    def test_set_present_location_not_authorised(self):
+        """method for testing Admin change present location no location"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        response = self.client.put('api/v2/parcels/1/presentLocation',  content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.assertEqual(response.status_code, 401)
+
+    def test_set_delivery_status(self):
+        """method for testing Admin change delivery status"""
+        self.create_valid_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        self.client.post('api/v2/parcels', data=json.dumps(post_an_order), content_type='application/json',
+                                    headers={'Authorization': self.get_token()})
+        self.create_admin_user()
+        self.client.post(
+            '/api/v2/auth/login/', data=json.dumps(user_login_data), content_type='application/json')
+        response = self.client.put('api/v2/parcels/1/status', data=json.dumps(admin_delivery_status), content_type='application/json',
+                                    headers={'Authorization': self.get_admin_token()})
+        self.assertEqual(response.status_code, 200)
+
 
 
     def tearDown(self):
         """method for rearing down the tables whenever a test is completed"""
-        print('------Tearingdown----------------------')
         self.db.drop_table('users', 'orders')

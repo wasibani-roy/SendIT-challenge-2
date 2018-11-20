@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
 from instance.config import app_config
-
+from flask_jwt_extended import JWTManager
+from .users import users as users_blueprint
+from .parcel_orders import orders as orders_blueprint
 import os
-
+# import flasgger
 
 
 def create_app(config_name):
@@ -11,12 +13,10 @@ def create_app(config_name):
     # app.config.from_pyfile('config.py')
     env = os.getenv('FLASK_ENV')
 
+    # flasgger.Swagger(app)
 
     """We add JWT secret key constant"""
     app.config["JWT_SECRET_KEY"] = "wasibani93-256"
-
-    """we import the JWTManager class from flask-jwt-extended library"""
-    from flask_jwt_extended import JWTManager
 
     """   
      initialize jwt by passing our app instance to JWTManager class.
@@ -29,9 +29,10 @@ def create_app(config_name):
 
     """
 
-    from .users import users as users_blueprint
     app.register_blueprint(users_blueprint)
 
+
+    app.register_blueprint(orders_blueprint)
 
 
     @app.errorhandler(405)

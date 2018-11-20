@@ -1,11 +1,12 @@
-# post_an_order = {
-#     "parcel_name": "wardrobe",
-#     "destination": "mutundwe",
-#     "username": "wasibani",
-#     "receiver": "danny1",
-#     "user_id":1
-#
-# }
+post_an_order = {
+    "parcel_name": "wardrobe",
+    "destination": "mutundwe",
+    "receiver": "danny1"
+}
+post_an_order_invalid_data_post = {
+    "parcel_name": "wardrobe",
+    "receiver": "danny1"
+}
 # post_an_order_no_username = {
 #     "parcel_name": "wardrobe",
 #     "destination": "mutundwe",
@@ -78,8 +79,8 @@ user_login_data = {
     "password": "12345"
 }
 admin_login_data = {
-    "username": "wasibani",
-    "password": "12345"
+    "username": "admin",
+    "password": "admin"
 }
 user_login_data_invalid_password = {
     "username": "wasibani",
@@ -91,5 +92,11 @@ user_login_data_invalid_username = {
 user_login_data_invalid_name = {
     "username": "Danny12",
     "password": "12345"
+}
+admin_change_location = {
+    "present_location": "jinja"
+}
+admin_delivery_status = {
+    "delivery_status": "in transit"
 }
 

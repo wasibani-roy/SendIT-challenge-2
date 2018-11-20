@@ -2,19 +2,9 @@ from flask import jsonify, make_response, request
 from .models import User
 import flask.views
 from werkzeug.security import generate_password_hash
-import psycopg2
 from app.helper import *
 
 class Register(flask.views.MethodView):
-    # def get(self):
-    #     try:
-    #         all_user = User('username', 'password')
-    #         rows = all_user.fetch_all_users()
-    #         if rows == True:
-    #             return {"message": " There are no users currently"}, 200
-    #         return make_response(jsonify({"users": rows}), 200)
-    #     except (Exception, psycopg2.DatabaseError)as Error:
-    #         print(Error)
 
     def post(self):
         try:
@@ -48,8 +38,8 @@ class Register(flask.views.MethodView):
             use = User(username.lower(), email, password)
             user = use.check_user(username)
             if user:
-                return make_response(jsonify({'message': 'Username already exists'}), 403)
+                return make_response(jsonify({'Message': 'Username already exists'}), 403)
             use.insert_user_data()
-            return make_response(jsonify({'message': "you have succesfully signed up"}), 201)
+            return make_response(jsonify({'Message': "you have succesfully signed up"}), 201)
         except Exception as e:
             raise e
