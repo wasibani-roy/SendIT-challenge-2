@@ -26,17 +26,16 @@ class Login(flask.views.MethodView):
         if validate_not_username_characters(username):
             return make_response(jsonify({"Message": "Username must contain only characters"}), 400)
 
-
         """
             read from database to find the user and then check the password
 
         """
 
         user = existing_user.fetch_user(username)
-        # print(user)
         if user and check_password_hash(user['password'], password):
-            access_token = create_access_token(identity={"user_id":user['user_id'], "username":user['username']})
+            access_token = create_access_token(identity={"user_id": user['user_id'], "username": user['username']})
             return make_response(jsonify({
-                    "message": "You have successfully logged in {}".format(user['username']), "access token": access_token}), 200)
+                "message": "You have successfully logged in {}".format(user['username']),
+                "access token": access_token}), 200)
         else:
             return make_response(jsonify({'message': 'Invalid credentials'}), 401)

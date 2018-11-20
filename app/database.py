@@ -1,4 +1,4 @@
-"""This database connection file"""
+"""This file handles setting up the connection to database"""
 import psycopg2
 import psycopg2.extras as sendIT
 import os
@@ -39,7 +39,6 @@ class Database:
 
         for command in commands:
             self.cur.execute(command)
-            # print('tables created succesfully')
 
     def create_item(self, sql):
         self.cur.execute(sql)
@@ -61,5 +60,4 @@ class Database:
         '''Drops the tables created '''
         for table_name in table_names:
             drop_table = "DROP TABLE IF EXISTS {} CASCADE".format(table_name)
-            print('all tables dropped')
             self.cur.execute(drop_table)
