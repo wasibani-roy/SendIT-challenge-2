@@ -1,0 +1,2 @@
+repo_token: LFo8DPWKZ2H3MsNJI79uqXPp2KMUyZws1
+parallel: true # if the CI is running your build in parallel

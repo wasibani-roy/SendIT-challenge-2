@@ -1,0 +1,19 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database sendit_test_db;' -U postgres
+  - export DATABASE_URL=sendit_test_db
+# command to run tests
+
+script: pytest -v --cov=app --cov-report term-missing 
+
+after_success:
+  - coveralls
