@@ -1,0 +1,12 @@
+from app import create_app
+from app.database  import Database
+import os
+
+config_name = os.environ['FLASKENV']
+app = create_app(config_name)
+
+db = Database()
+
+if __name__ == '__main__':
+    db.create_tables()
+    app.run()
