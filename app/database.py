@@ -7,9 +7,10 @@ import os
 class Database:
     """This class connects to the database"""
     def __init__(self):
+        db = "d6q5a9sklhd48a"
 
         self.conn = psycopg2.connect(
-            database="d6q5a9sklhd48a", user="vyriitwrgflaqt", password="61e72d8b7c669e8f0432f0d0597a4d421841ed7c983d46c1fe78113044eeb4d0",
+            database=db, user="vyriitwrgflaqt", password="61e72d8b7c669e8f0432f0d0597a4d421841ed7c983d46c1fe78113044eeb4d0",
             host="ec2-54-163-230-178.compute-1.amazonaws.com", port="5432"
         )
         self.conn.autocommit = True
