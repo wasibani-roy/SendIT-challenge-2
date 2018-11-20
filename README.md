@@ -37,6 +37,11 @@ Go into the folder, create a virtual environment, activate it and then use a pip
 ```
    pip install -r requirements.txt
 ```
+Next we need to set the Enviroment variable that is going to hold the database we want to 
+use in our development enviroment
+```
+   set DATABASE_URL=sendit (For windows) or export DATABASE_URL=sendit(for Linux)
+```
 When this is done then run the application by typing this command
 ```
     python run.py
@@ -49,6 +54,11 @@ When this is done then run the application by typing this command
 To run tests, make sure that pytest or nose is installed. you can run that command to install them
 ```
     $ pip install -r requirements.txt
+```
+Next we need to set the Enviroment variable that is going to hold the database we want to 
+use in our test enviroment
+```
+   set DATABASE_URL=sendit_test_db or export DATABASE_URL=sendit_test_db
 ```
 Then run these commands to begin testing the API
 ```
