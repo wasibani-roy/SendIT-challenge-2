@@ -10,8 +10,8 @@ class Database:
         db = os.environ["DATABASE_URL"]
 
         self.conn = psycopg2.connect(
-            database=db, user="postgres", password="root",
-            host="localhost", port="5432"
+            database=db, user="vyriitwrgflaqt", password="61e72d8b7c669e8f0432f0d0597a4d421841ed7c983d46c1fe78113044eeb4d0",
+            host="ec2-54-163-230-178.compute-1.amazonaws.com", port="5432"
         )
         self.conn.autocommit = True
         self.cur = self.conn.cursor(cursor_factory=sendIT.RealDictCursor)
