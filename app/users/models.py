@@ -1,41 +1,45 @@
-from app.database import Database
+"""This module handles all data requests coming from controllers"""
 import psycopg2
-import os
+from app.database import Database
 
-db = Database()
+DB = Database()
 
 
 class User:
     """This class handles database transactions for the user"""
 
     def __init__(self, username, email, password):
+        """Constructor to intialise our class"""
         self.username = username
         self.email = email
         self.password = password
 
     def insert_user_data(self):
+        """Method to insert user data into our table"""
         try:
             query = "INSERT INTO users (username,password,email) VALUES(%s, %s,%s)"
             data = (self.username, self.password, self.email)
-            user = db.cur.execute(query, data)
+            user = DB.cur.execute(query, data)
             print(user)
             return {'message': 'user registered succesfully'}, 201
-        except Exception as e:
-            raise e
+        except Exception as error:
+            raise error
 
     def fetch_user(self, username):
+        """Method to fetch a given users data by name"""
         try:
             query = "SELECT * FROM users WHERE username=%s"
-            db.cur.execute(query, (username,))
-            user = db.cur.fetchone()
+            DB.cur.execute(query, (username,))
+            user = DB.cur.fetchone()
             return user
-        except Exception as e:
-            return {'msg': 'user not found'}, 404
+        except:
+            return {'message': 'user not found'}, 404
 
     def check_user(self, username):
+        """Method to check if a give user already exists in the database"""
         query = "SELECT * FROM users WHERE username=%s"
-        db.cur.execute(query, (username,))
-        user = db.cur.fetchone()
+        DB.cur.execute(query, (username,))
+        user = DB.cur.fetchone()
         if user:
             return True
         return False
@@ -44,22 +48,20 @@ class User:
         """ Fetches all user records from the database"""
         try:
             query = ("SELECT * FROM users;")
-            db.cur.execute(query)
-            rows = db.cur.fetchall()
+            DB.cur.execute(query)
+            rows = DB.cur.fetchall()
             return rows
-        except (Exception, psycopg2.DatabaseError)as Error:
-            raise Error
+        except (Exception, psycopg2.DatabaseError)as error:
+            raise error
 
     @staticmethod
     def fetch_user_by_id(user_id):
+        """Method to fetch user data by user id"""
         try:
-            db = Database(os.environ["DATABASE_URL"])
             query = "SELECT * FROM users WHERE user_id=%s"
-            db.cur.execute(query, (user_id,))
-            user = db.cur.fetchone()
+            DB.cur.execute(query, (user_id,))
+            user = DB.cur.fetchone()
             print(user)
             return user
-        except Exception as e:
-            return {'msg': 'user not found'}, 404
-
-
+        except:
+            return {'message': 'user not found'}, 404

@@ -1,0 +1,36 @@
+Place delivery order
+---
+tags:
+- SendIT Orders
+description: This is a POST request to place parcel delivery order.
+
+parameters:
+- name: Authorization
+  in: header
+  description: authorization header
+  required: true
+  type: string
+  schema:
+  id: bearer
+
+- name: Place delivery order
+  in: body
+  name: body
+  description: Client user should be able to place a delivery order.
+  required: true
+  schema:
+    id: user
+
+responses:
+  201:
+    description: you have succesfully placed order
+
+security:
+  - JWT:
+      description: Pass in JWT token
+      type: apikey
+      schema: bearer
+      name: Authorization
+      in: header
+      template: "Bearer {apikey}"
+      bearerFormat: JWT

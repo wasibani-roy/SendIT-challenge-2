@@ -2,18 +2,15 @@ from flask import Flask, jsonify
 from instance.config import app_config
 from flask_jwt_extended import JWTManager
 from .users import users as users_blueprint
-from .parcel_orders import orders as orders_blueprint
-import os
-# import flasgger
+from .parcel import orders as orders_blueprint
+from flasgger import Swagger
 
 
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(app_config[config_name])
-    # app.config.from_pyfile('config.py')
-    env = os.getenv('FLASK_ENV')
 
-    # flasgger.Swagger(app)
+    Swagger(app)
 
     """We add JWT secret key constant"""
     app.config["JWT_SECRET_KEY"] = "wasibani93-256"

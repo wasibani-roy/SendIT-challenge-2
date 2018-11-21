@@ -1,0 +1,31 @@
+Register new User
+---
+tags:
+- SendIT Register
+description: This is a POST request to register a new user
+
+consumes:
+- application/json
+
+produces:
+- application/json
+
+parameters:
+- in: body
+  name: body
+  description: user details to be added to the database
+  required: true
+  schema:
+    id: user
+
+responses:
+  201:
+    description: you have succesfully signed up
+
+definitions:
+  user:
+    type: object
+    properties:
+      username: string
+      email: string
+      password: string

@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/wasibani-roy/SendIT-challenge-2.svg?branch=SendIT-api)](https://travis-ci.org/wasibani-roy/SendIT-challenge-2)
 [![Coverage Status](https://coveralls.io/repos/github/wasibani-roy/SendIT-challenge-2/badge.svg?branch=SendIT-api)](https://coveralls.io/github/wasibani-roy/SendIT-challenge-2?branch=SendIT-api)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2c1a80866d94de0dc9ed/maintainability)](https://codeclimate.com/github/wasibani-roy/SendIT-challenge-2/maintainability)
 
 
 

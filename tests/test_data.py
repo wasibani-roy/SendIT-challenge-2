@@ -1,34 +1,14 @@
 post_an_order = {
     "parcel_name": "wardrobe",
     "destination": "mutundwe",
-    "receiver": "danny1"
+    "receiver": "danny"
 }
 post_an_order_invalid_data_post = {
     "parcel_name": "wardrobe",
+    "destination": "",
     "receiver": "danny1"
 }
-# post_an_order_no_username = {
-#     "parcel_name": "wardrobe",
-#     "destination": "mutundwe",
-#     "receiver": "danny1",
-#     "user_id":1
-#
-# }
-# post_an_order_no_parcelname = {
-#     "destination": "mutundwe",
-#     "username": "wasibani",
-#     "receiver": "danny1",
-#     "user_id":1
-#
-# }
-# post_with_empty_destination = {
-#     "parcel_name": "roy 234",
-#     "username": "wasibani",
-#     "receiver": "danny",
-#     "destination": "",
-#     "present_location": "wandegeya",
-#     "status": "pending"
-# }
+
 user_register_data = {
     "username": "wasibani",
     "email": "roy@me.com",
@@ -94,9 +74,12 @@ user_login_data_invalid_name = {
     "password": "12345"
 }
 admin_change_location = {
-    "present_location": "jinja"
+    "location": "jinja"
 }
 admin_delivery_status = {
-    "delivery_status": "in transit"
+    "delivery_status": "transit"
+}
+update_destination={
+    "destination": "wandegeya"
 }
 
