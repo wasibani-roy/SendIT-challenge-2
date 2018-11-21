@@ -1,14 +1,14 @@
+"""This module handles the signup route"""
 from flask import jsonify, make_response, request
-from .models import User
 import flask.views
 from werkzeug.security import generate_password_hash
-from app.helper import (validate_not_username_string, \
-    validate_not_username_characters, validate_no_data, validate_data_not_length \
-    , validate_not_email, validate_not_email_structure)
 from flasgger import swag_from
+from app.helper import (is_not_valid_username, is_not_valid_password, validate_not_email_structure)
+from .models import User
 
 
 class Register(flask.views.MethodView):
+    """class function for post route URL"""
     @swag_from('../docs/signup.yml', methods=['POST'])
     def post(self):
         """Method handling the user signup route"""
@@ -20,24 +20,12 @@ class Register(flask.views.MethodView):
             password = generate_password_hash(
                 user_password, method='sha256')
 
-            if validate_not_username_string(username):
-                return make_response(jsonify({"Message": "Username must be a string"}), 400)
-            if validate_no_data(username):
-                return make_response(jsonify({"Message": "Username is required"}), 400)
-            if validate_no_data(user_password):
-                return make_response(jsonify({"Message": "Password is required"}), 400)
-            if validate_not_username_characters(username):
-                return make_response(jsonify({"Message": "Username must contain only characters"}), 400)
-            if validate_no_data(email):
-                return make_response(jsonify({"Message": "email is required"}), 400)
-            if validate_data_not_length(username):
-                return make_response(jsonify({"Message": "username is to short"}), 400)
-            if validate_data_not_length(user_password):
-                return make_response(jsonify({"Message": "password is to short"}), 400)
-            if validate_not_email(email):
-                return make_response(jsonify({"Message": "please input a valid email"}), 400)
-            if validate_not_email_structure(email):
-                return make_response(jsonify({"Message": "please input valid email"}), 400)
+            if is_not_valid_username(username.strip()):
+                return make_response(jsonify({"Message": "Username is incorrect"}), 400)
+            if is_not_valid_password(user_password.strip()):
+                return make_response(jsonify({"Message": "Password is incorrect"}), 400)
+            if validate_not_email_structure(email.strip()):
+                return make_response(jsonify({"Message": "email is incorrect"}), 400)
 
             # creating an instance of the user class
             use = User(username.lower(), email, password)
@@ -46,5 +34,5 @@ class Register(flask.views.MethodView):
                 return make_response(jsonify({'Message': 'Username already exists'}), 403)
             use.insert_user_data()
             return make_response(jsonify({'Message': "you have succesfully signed up"}), 201)
-        except Exception as e:
-            raise e
+        except Exception as error:
+            raise error

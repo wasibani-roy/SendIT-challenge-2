@@ -1,24 +1,26 @@
-from flask import jsonify, make_response
-from app.helper import (validate_not_order_detail_string, validate_no_data)
-from .models import Order
-from flask import request
+"""This module handles the parcels route"""
+from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from flasgger import swag_from
+from app.helper import (is_not_valid_order)
+from .models import Order
 
 
 class ParcelOrder(flask.views.MethodView):
+    """Class handling post and get routes"""
     @jwt_required
     @swag_from('../docs/get_orders.yml', methods=['GET'])
     def get(self):
+        """Method to get all orders"""
         current_user = get_jwt_identity()
         if current_user['username'] == "admin":
             orders = Order.order_history()
             if not orders:
-                return make_response(jsonify({"Message": "No orders placed so far"}), 200)
+                return make_response(jsonify({"message": "No orders placed so far"}), 200)
             return make_response(jsonify({"Parcel orders": orders}), 200)
 
-        return make_response(jsonify({"Message": \
+        return make_response(jsonify({"message": \
                                           "You are not authorised to access this resource"}), 401)
 
     @jwt_required
@@ -32,18 +34,12 @@ class ParcelOrder(flask.views.MethodView):
         destination = parser.get('destination')
         receiver_name = parser.get('receiver')
         # Validate the data before use
-        if validate_not_order_detail_string(parcel_name):
-            return make_response(jsonify({"Message": "parcel_name must be a string"}), 400)
-        if validate_not_order_detail_string(destination):
-            return make_response(jsonify({"Message": "destination must be a string"}), 400)
-        if validate_not_order_detail_string(receiver_name):
-            return make_response(jsonify({"Message": "receiver name must be a string"}), 400)
-        if validate_no_data(parcel_name):
-            return make_response(jsonify({"Message": "parcel_name is required"}), 400)
-        if validate_no_data(destination):
-            return make_response(jsonify({"Message": "destination is required"}), 400)
-        if validate_no_data(receiver_name):
-            return make_response(jsonify({"Message": "receiver name is required"}), 400)
+        if is_not_valid_order(parcel_name.strip()):
+            return make_response(jsonify({"message": "parcel_name is incorrect"}), 400)
+        if is_not_valid_order(destination.strip()):
+            return make_response(jsonify({"Message": "destination is in correct"}), 400)
+        if is_not_valid_order(receiver_name.strip()):
+            return make_response(jsonify({"Message": "receiver name is incorrect"}), 400)
 
         status = "pending"
         present_location = "Headquaters"
@@ -58,8 +54,8 @@ class ParcelOrder(flask.views.MethodView):
                       deliver_status=deliver_status.lower())
         select_order = order.fetch_parcel_name()
         if select_order:
-            return make_response(jsonify({'Message': 'Order has already been placed'}), 403)
+            return make_response(jsonify({'message': 'Order has already been placed'}), 403)
         create_order = order.insert_order_data()
         if create_order:
-            return make_response(jsonify({'Messege': "you have succesfully placed order"}), 201)
-        return make_response(jsonify({"Message": "Order not placed succesfully"}), 400)
+            return make_response(jsonify({'messege': "you have succesfully placed order"}), 201)
+        return make_response(jsonify({"message": "Order not placed succesfully"}), 400)

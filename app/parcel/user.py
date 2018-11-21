@@ -1,17 +1,21 @@
-from flask import jsonify, make_response
-from app.helper import validate_no_data, validate_not_order_detail_string
-from .models import Order
-from flask import request
+"""Module handles the user order routes"""
+from flask import (jsonify, make_response, request)
 import flask.views
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import (jwt_required, get_jwt_identity)
+from app.helper import is_not_valid_order
+from .models import Order
+
 
 class UserSpecificOrder(flask.views.MethodView):
+    """This class handles the get and put routes of users orders"""
+
     @jwt_required
     def get(self):
         """Method handling the get a specific users parcel orders"""
         current_user = get_jwt_identity()
         user_id = current_user['user_id']
-        new_order = Order(user_id=user_id, parcel_name=None, order_id=None, receiver_name=None, status=None,
+        new_order = Order(user_id=user_id, parcel_name=None, order_id=None, \
+                          receiver_name=None, status=None,
                           deliver_status=None \
                           , destination=None, present_location=None)
         order = new_order.user_orders()
@@ -30,30 +34,36 @@ class UserSpecificOrder(flask.views.MethodView):
                       receiver_name=None, status=None,
                       deliver_status=None \
                       , destination=destination.lower(), present_location=None)
-        if validate_not_order_detail_string(destination):
-            return make_response(jsonify({'Message': 'Destination must be a string'}), 400)
-        if validate_no_data(destination):
-            return make_response(jsonify({'Message': 'Please enter the new destination'}), 400)
+        if is_not_valid_order(destination.strip()):
+            return make_response(jsonify({'message': 'destination incorrect'}), 400)
         if order.check_delivery_status():
-            return make_response(jsonify({"Message": "You can not change the destination of a delivered product"}), 400)
+            return make_response(jsonify({"message": \
+                                              "You can not change the\
+                                               destination of a delivered product"}), \
+                                 400)
 
         update_destination = order.update_destination()
         if update_destination:
-            return make_response(jsonify({'Message': 'destination updated succesfully'}), 200)
-        return make_response(jsonify({'Message': 'Failed to update destination'}), 400)
+            return make_response(jsonify({'message': 'destination updated succesfully'}), 200)
+        return make_response(jsonify({'message': 'Failed to update destination'}), 400)
 
 
 class UserSpecificOrderById(flask.views.MethodView):
+    """This class handles get route for specific user order"""
+
     @jwt_required
     def get(self, parcel_id):
         """Method handling the get a specific users parcel order by id"""
         current_user = get_jwt_identity()
         user_id = current_user['user_id']
-        new_order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, receiver_name=None, status=None,
+        new_order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
+                          receiver_name=None, status=None,
                           deliver_status=None \
                           , destination=None, present_location=None)
         order = new_order.single_order()
         if not order:
-            return make_response(jsonify({'Messege': "This parcel order doesn't exist please check id and try again"}),
+            return make_response(jsonify({'message': \
+                                              "This parcel order doesn't\
+                                               exist please check id and try again"}),
                                  404)
         return make_response(jsonify({'orders': order}), 200)
