@@ -1,10 +1,16 @@
-Admin Get All Placed Orders
+User Get specific Orders
 ---
 tags:
 - Parcel
-description: This is a GET request to get all orders by admin.
+description: This is a GET request to get a specific order by user.
 
 parameters:
+- in: path
+  name: parcelId
+  description: parcel id for specific parcel
+  required: true
+  type: integer
+
 - in: header
   name: Authorization
   description: authorization header
@@ -15,23 +21,23 @@ parameters:
 
 responses:
   200:
-    description: parcel orders
+    description: parcel order
     schema:
       type: object
       properties:
         message:
           type: object
           enum:
-            - "Orders"
-  401:
-    description: parcel orders
+            - "orders"
+  404:
+    description: no parcel order found
     schema:
       type: object
       properties:
         message:
           type: string
           enum:
-            - "You are not authorised to access this resource"
+            - "This parcel order doesn't exist please check id and try again"
 
 security:
   - JWT:

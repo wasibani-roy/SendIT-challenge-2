@@ -73,6 +73,14 @@ class Order:
         except Exception as error:
             return error
 
+    @staticmethod
+    def fetch_role(user_id):
+        """Method to fetch user role by user id"""
+        query = "SELECT * FROM users WHERE user_id=%s"
+        db.cur.execute(query, (user_id,))
+        user = db.cur.fetchone()
+        return user["role"]
+
     def update_delivery_status(self):
         """This method updates the delivery status of a specific parcel order"""
         query = "UPDATE orders SET deliver_status = %s WHERE parcel_order_id = %s"

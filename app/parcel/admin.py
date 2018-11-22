@@ -2,6 +2,7 @@
 from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
+from flasgger import swag_from
 from app.helper import is_not_valid_order
 from .models import Order
 
@@ -10,11 +11,14 @@ class AdminOrderLocation(flask.views.MethodView):
     """This class handles the update location route"""
 
     @jwt_required
+    @swag_from('../docs/put_location.yml', methods=['PUT'])
     def put(self, parcel_id):
         """This method updates the location of a parcel order"""
         current_user = get_jwt_identity()
-        if current_user['username'] == "admin":
+        if Order.fetch_role(current_user["user_id"]) == "admin":
             parser = request.get_json()
+            if len(parser.keys()) != 1:
+                return make_response(jsonify({"message": "Some fields are missing!"}), 400)
             present_location = parser.get('location')
             order = Order(user_id=None, parcel_name=None, order_id=parcel_id, \
                           receiver_name=None, status=None,
@@ -37,11 +41,14 @@ class AdminOrderStatus(flask.views.MethodView):
     """This handles the user update delivery status route"""
 
     @jwt_required
+    @swag_from('../docs/put_status.yml', methods=['PUT'])
     def put(self, parcel_id):
         """Method to update deliver status of a specific route"""
         current_user = get_jwt_identity()
-        if current_user['username'] == "admin":
+        if Order.fetch_role(current_user["user_id"]) == "admin":
             parser = request.get_json()
+            if len(parser.keys()) != 1:
+                return make_response(jsonify({"message": "Some fields are missing!"}), 400)
             deliver_status = parser.get('delivery_status')
             order = Order(user_id=None, parcel_name=None, order_id=parcel_id, \
                           receiver_name=None, status=None,
