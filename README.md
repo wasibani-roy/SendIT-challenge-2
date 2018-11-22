@@ -12,7 +12,8 @@ This application interacts with a PostgreSQL database to save user data and is m
 
 ### Heroku link
 https://wasibani-sendit.herokuapp.com/
-###Heroku docs link
+
+### Heroku docs link
 https://wasibani-sendit.herokuapp.com/apidocs
 ### Prerequisites
 
