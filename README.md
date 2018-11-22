@@ -10,6 +10,9 @@
 
 This application interacts with a PostgreSQL database to save user data and is meant for use parcel delivery service.
 
+### Heroku link
+https://wasibani-sendit.herokuapp.com/
+
 ### Prerequisites
 
 - You need to have Python3 installed on your computer. To install it go to [www.python.org](https://www.python.org/). Note: Python needs to be installed globally (not in the virtual environment)
