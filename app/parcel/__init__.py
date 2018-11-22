@@ -1,10 +1,10 @@
 from flask import Blueprint
 
-from .user_order_views import UserSpecificOrder, UserSpecificOrderById
-from .admin_order_views import AdminOrderLocation, AdminOrderStatus
-from .parcel_order_view import ParcelOrder
+from .user import UserSpecificOrder, UserSpecificOrderById
+from .admin import AdminOrderLocation, AdminOrderStatus
+from .parcel import ParcelOrder
 
-orders = Blueprint('parcel_orders', __name__, url_prefix='/api/v2')
+orders = Blueprint('parcel', __name__, url_prefix='/api/v2')
 
 orders.add_url_rule('/parcels', view_func=ParcelOrder.as_view('make order'),
                     methods=['POST'], strict_slashes=False)
