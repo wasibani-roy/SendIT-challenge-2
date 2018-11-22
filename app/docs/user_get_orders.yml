@@ -1,8 +1,8 @@
-Admin Get All Placed Orders
+User Get All Placed Orders
 ---
 tags:
 - Parcel
-description: This is a GET request to get all orders by admin.
+description: This is a GET request to get all orders by user.
 
 parameters:
 - in: header
@@ -22,8 +22,8 @@ responses:
         message:
           type: object
           enum:
-            - "Orders"
-  401:
+            - "orders"
+  404:
     description: parcel orders
     schema:
       type: object
@@ -31,7 +31,7 @@ responses:
         message:
           type: string
           enum:
-            - "You are not authorised to access this resource"
+            - "you have no orders at this time"
 
 security:
   - JWT:

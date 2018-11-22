@@ -3,7 +3,6 @@ import os
 class BaseConfig:
     DEBUG = True
 
-
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
 
@@ -12,7 +11,7 @@ class TestingConfig(BaseConfig):
     Testing = True
 
 class ProductionConfig(BaseConfig):
-    Debug = False
+    DEBUG = False
 
 app_config = {
     "development": DevelopmentConfig,

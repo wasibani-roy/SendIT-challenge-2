@@ -1,8 +1,8 @@
-Register new User
+Login new User
 ---
 tags:
 - User
-description: This is a POST request to register a new user
+description: This is a POST request to login a new user
 
 consumes:
 - application/json
@@ -13,35 +13,33 @@ produces:
 parameters:
 - in: body
   name: body
-  description: user details to be added to the database
+  description: user details to be verified before login
   required: true
   schema:
     type: object
     required:
         - "username"
-        - "email"
         - "password"
-        - "role"
 
 responses:
   201:
-    description: You have successfully signed up
+    description: You have successfully login wasibani
     schema:
       type: object
       properties:
         message:
           type: string
           enum:
-            - "You have successfully signed up"
-  403:
-    description: username already exists
+            - "You have successfully logged in wasibani"
+  401:
+    description: Invalid credentials
     schema:
       type: object
       properties:
         message:
           type: string
           enum:
-            - "Username already exists"
+            - "Invalid credentials"
 
 definitions:
   user:
@@ -50,12 +48,6 @@ definitions:
       username:
         type: "string"
         example: "wasibani"
-      email:
-        type: "string"
-        example: "wasibani@gmail.com"
       password:
         type: "string"
         example: "wasiba23"
-      role:
-        type: "string"
-        example: "user"
