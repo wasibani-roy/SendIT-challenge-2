@@ -14,22 +14,23 @@ class ParcelOrder(flask.views.MethodView):
     def get(self):
         """Method to get all orders"""
         current_user = get_jwt_identity()
-        if current_user['username'] == "admin":
+        if Order.fetch_role(current_user["user_id"]) == "admin":
             orders = Order.order_history()
             if not orders:
                 return make_response(jsonify({"message": "No orders placed so far"}), 200)
             return make_response(jsonify({"Parcel orders": orders}), 200)
 
-        return make_response(jsonify({"message": \
-                                          "You are not authorised to access this resource"}), 401)
+        return make_response(jsonify({"message": "You are not authorised to access this resource"}), 401)
 
     @jwt_required
-    @swag_from('../docs/place_order.yml', methods=['POST'])
+    @swag_from('../docs/post_parcel.yml', methods=['POST'])
     def post(self):
         """Method handling post a parcel order by logged in user"""
         current_user = get_jwt_identity()
         # Receiving request data from users
         parser = request.get_json()
+        if len(parser.keys()) != 3:
+            return make_response(jsonify({"message": "Some fields are missing!"}), 400)
         parcel_name = parser.get('parcel_name')
         destination = parser.get('destination')
         receiver_name = parser.get('receiver')

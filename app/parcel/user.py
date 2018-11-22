@@ -2,6 +2,7 @@
 from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
+from flasgger import swag_from
 from app.helper import is_not_valid_order
 from .models import Order
 
@@ -10,6 +11,7 @@ class UserSpecificOrder(flask.views.MethodView):
     """This class handles the get and put routes of users orders"""
 
     @jwt_required
+    @swag_from('../docs/user_get_orders.yml', methods=['GET'])
     def get(self):
         """Method handling the get a specific users parcel orders"""
         current_user = get_jwt_identity()
@@ -24,11 +26,14 @@ class UserSpecificOrder(flask.views.MethodView):
         return make_response(jsonify({'orders': order}), 200)
 
     @jwt_required
+    @swag_from('../docs/put_destination.yml', methods=['PUT'])
     def put(self, parcel_id):
         """Method handling the update of destination"""
         current_user = get_jwt_identity()
         user_id = current_user['user_id']
         parser = request.get_json()
+        if len(parser.keys()) != 1:
+            return make_response(jsonify({"message": "Some fields are missing!"}), 400)
         destination = parser.get('destination')
         order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
                       receiver_name=None, status=None,
@@ -37,9 +42,7 @@ class UserSpecificOrder(flask.views.MethodView):
         if is_not_valid_order(destination.strip()):
             return make_response(jsonify({'message': 'destination incorrect'}), 400)
         if order.check_delivery_status():
-            return make_response(jsonify({"message": \
-                                              "You can not change the\
-                                               destination of a delivered product"}), \
+            return make_response(jsonify({"message": "You can not change the destination of a delivered product"}), \
                                  400)
 
         update_destination = order.update_destination()
@@ -52,6 +55,7 @@ class UserSpecificOrderById(flask.views.MethodView):
     """This class handles get route for specific user order"""
 
     @jwt_required
+    @swag_from('../docs/user_get_specific_order.yml', methods=['GET'])
     def get(self, parcel_id):
         """Method handling the get a specific users parcel order by id"""
         current_user = get_jwt_identity()
@@ -62,8 +66,6 @@ class UserSpecificOrderById(flask.views.MethodView):
                           , destination=None, present_location=None)
         order = new_order.single_order()
         if not order:
-            return make_response(jsonify({'message': \
-                                              "This parcel order doesn't\
-                                               exist please check id and try again"}),
+            return make_response(jsonify({'message': "This parcel order doesn't exist please check id and try again"}),
                                  404)
         return make_response(jsonify({'orders': order}), 200)

@@ -8,19 +8,19 @@ DB = Database()
 class User:
     """This class handles database transactions for the user"""
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, role):
         """Constructor to intialise our class"""
         self.username = username
         self.email = email
         self.password = password
+        self.role = role
 
     def insert_user_data(self):
         """Method to insert user data into our table"""
         try:
-            query = "INSERT INTO users (username,password,email) VALUES(%s, %s,%s)"
-            data = (self.username, self.password, self.email)
+            query = "INSERT INTO users (username,password,email,role) VALUES(%s, %s,%s,%s)"
+            data = (self.username, self.password, self.email, self.role)
             user = DB.cur.execute(query, data)
-            print(user)
             return {'message': 'user registered succesfully'}, 201
         except Exception as error:
             raise error
@@ -61,7 +61,8 @@ class User:
             query = "SELECT * FROM users WHERE user_id=%s"
             DB.cur.execute(query, (user_id,))
             user = DB.cur.fetchone()
-            print(user)
             return user
         except:
             return {'message': 'user not found'}, 404
+
+

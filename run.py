@@ -2,7 +2,7 @@ from app import create_app
 from app.database  import Database
 import os
 
-config_name = "development"
+config_name = os.environ['FLASKENV']
 app = create_app(config_name)
 
 db = Database()

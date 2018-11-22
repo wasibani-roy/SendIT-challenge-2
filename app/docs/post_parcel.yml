@@ -1,0 +1,64 @@
+Post Parcel Order
+---
+tags:
+- Parcel
+description: This is a POST request to make a parcel order
+
+consumes:
+- application/json
+
+produces:
+- application/json
+
+parameters:
+- in: header
+  name: Authorization
+  description: authorization header
+  required: true
+  type: string
+  schema:
+  id: bearer
+- in: body
+  name: body
+  description: parcel order details to be added to the database
+  required: true
+  schema:
+    type: object
+    required:
+        - "parcel_name"
+        - "destination"
+        - "receiver"
+
+responses:
+  201:
+    description: Orders
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Orders"
+  403:
+    description: Order has already been placed
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "Order has already been placed"
+
+definitions:
+  parcel:
+    type: object
+    properties:
+      parcel_name:
+        type: "string"
+        example: "chairs"
+      destination:
+        type: "string"
+        example: "Pallisa"
+      receiver:
+        type: "string"
+        example: "danny"

@@ -1,36 +1,39 @@
-from flask import Flask, jsonify
-from instance.config import app_config
+"""This module handles the creation of app basing on passed in config name"""
+from flask import (Flask, jsonify)
 from flask_jwt_extended import JWTManager
+from flasgger import Swagger
+from instance.config import app_config
 from .users import users as users_blueprint
 from .parcel import orders as orders_blueprint
-from flasgger import Swagger
 
 
 def create_app(config_name):
+    """This function creates the app used in"""
     app = Flask(__name__)
     app.config.from_object(app_config[config_name])
 
+    app.config['SWAGGER'] = {
+        'swagger': '2.0',
+        'title': 'SendIT Parcel Delivery',
+        'description': "This API allows users to make parcel delivery orders",
+        'basePath': '',
+        'version': '2'
+    }
+
     Swagger(app)
 
-    """We add JWT secret key constant"""
+    # We add JWT secret key constant
     app.config["JWT_SECRET_KEY"] = "wasibani93-256"
 
-    """   
-     initialize jwt by passing our app instance to JWTManager class.
+    # initialize jwt by passing our app instance to JWTManager class.
 
-    """
     jwt = JWTManager(app)
 
-    """
-    Registering blueprints
-
-    """
+    # Registering blueprints
 
     app.register_blueprint(users_blueprint)
 
-
     app.register_blueprint(orders_blueprint)
-
 
     @app.errorhandler(405)
     def url_not_found(error):
@@ -53,5 +56,3 @@ def create_app(config_name):
         return "Welcome to sendIT application"
 
     return app
-
-
