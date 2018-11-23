@@ -36,8 +36,8 @@ class Database:
                 FOREIGN KEY (user_id) REFERENCES users(user_id) 
                 ON DELETE CASCADE ON UPDATE CASCADE)"""
 
-        self.cursor.execute(create_user_table)
-        self.cursor.execute(create_order_table)
+        self.cur.execute(create_user_table)
+        self.cur.execute(create_order_table)
 
     def create_tables(self):
         """method for creating all tables"""
