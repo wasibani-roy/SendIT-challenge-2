@@ -8,7 +8,7 @@ class Database:
     """This class connects to the database"""
 
     def __init__(self):
-        db_name = d6q5a9sklhd48a
+        db_name = "d6q5a9sklhd48a"
 
         self.conn = psycopg2.connect(
             database=db_name, user="vyriitwrgflaqt", password="61e72d8b7c669e8f0432f0d0597a4d421841ed7c983d46c1fe78113044eeb4d0",
