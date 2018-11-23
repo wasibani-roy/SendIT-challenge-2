@@ -8,5 +8,5 @@ app = create_app(config_name)
 db = Database()
 
 if __name__ == '__main__':
-    db.create_tables()
+
     app.run()
