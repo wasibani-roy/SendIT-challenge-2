@@ -16,7 +16,7 @@ class Database:
         )
         self.conn.autocommit = True
         self.cur = self.conn.cursor(cursor_factory=sendIT.RealDictCursor)
-        
+
         create_user_table = """CREATE TABLE IF NOT EXISTS users(
                 user_id SERIAL PRIMARY KEY,
                 username VARCHAR NOT NULL,
@@ -36,13 +36,8 @@ class Database:
                 FOREIGN KEY (user_id) REFERENCES users(user_id) 
                 ON DELETE CASCADE ON UPDATE CASCADE)"""
 
-        commands = (
-            create_user_table,
-            create_order_table
-        )
-
-        for command in commands:
-            self.cur.execute(command)
+        self.cursor.execute(create_user_table)
+        self.cursor.execute(create_order_table)
 
     def create_tables(self):
         """method for creating all tables"""
