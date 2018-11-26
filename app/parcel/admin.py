@@ -3,7 +3,7 @@ from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from flasgger import swag_from
-from app.helper import is_not_valid_order
+from app.helper import (is_not_valid_order, validate_not_keys)
 from .models import Order
 
 
@@ -17,13 +17,13 @@ class AdminOrderLocation(flask.views.MethodView):
         current_user = get_jwt_identity()
         if Order.fetch_role(current_user["user_id"]) == "admin":
             parser = request.get_json()
-            if len(parser.keys()) != 1:
+            if validate_not_keys(parser, 1):
                 return make_response(jsonify({"message": "Some fields are missing!"}), 400)
             present_location = parser.get('location')
             order = Order(user_id=None, parcel_name=None, order_id=parcel_id, \
                           receiver_name=None, status=None,
                           deliver_status=None \
-                          , destination=None, present_location=present_location.lower())
+                          , destination=None, present_location=present_location.lower(), price=None)
             if is_not_valid_order(present_location.strip()):
                 return make_response(jsonify({'message': 'present location is incorrect'}), 400)
 
@@ -53,10 +53,12 @@ class AdminOrderStatus(flask.views.MethodView):
             order = Order(user_id=None, parcel_name=None, order_id=parcel_id, \
                           receiver_name=None, status=None,
                           deliver_status=deliver_status.lower() \
-                          , destination=None, present_location=None)
+                          , destination=None, present_location=None, price=None)
             if is_not_valid_order(deliver_status.strip()):
                 return make_response(jsonify({'message': \
                                                   'Delivery status is incorrect'}), 400)
+            # if deliver_status != "delivered" or deliver_status != "transit":
+            #     return make_response(jsonify({"message": "Please enter a valid status"}), 400)
 
             update_status = order.update_delivery_status()
             if update_status:

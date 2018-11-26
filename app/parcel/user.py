@@ -19,7 +19,7 @@ class UserSpecificOrder(flask.views.MethodView):
         new_order = Order(user_id=user_id, parcel_name=None, order_id=None, \
                           receiver_name=None, status=None,
                           deliver_status=None \
-                          , destination=None, present_location=None)
+                          , destination=None, present_location=None, price=None)
         order = new_order.user_orders()
         if not order:
             return make_response(jsonify({'messege': "you have no orders at this time"}), 404)
@@ -38,7 +38,7 @@ class UserSpecificOrder(flask.views.MethodView):
         order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
                       receiver_name=None, status=None,
                       deliver_status=None \
-                      , destination=destination.lower(), present_location=None)
+                      , destination=destination.lower(), present_location=None, price=None)
         if is_not_valid_order(destination.strip()):
             return make_response(jsonify({'message': 'destination incorrect'}), 400)
         if order.check_delivery_status():
@@ -65,7 +65,7 @@ class UserSpecificOrderById(flask.views.MethodView):
         new_order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
                           receiver_name=None, status=None,
                           deliver_status=None \
-                          , destination=None, present_location=None)
+                          , destination=None, present_location=None, price=None)
         order = new_order.single_order()
         if not order:
             return make_response(jsonify({'message': \

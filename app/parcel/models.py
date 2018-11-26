@@ -9,7 +9,7 @@ class Order:
 
     def __init__(self, order_id, user_id, parcel_name,
                  receiver_name, destination, status, present_location,
-                 deliver_status):
+                 deliver_status, price):
         """
             This method acts as a constructor
             for our class, its used to initialise class attributes
@@ -22,6 +22,7 @@ class Order:
         self.present_location = present_location
         self.status = status
         self.deliver_status = deliver_status
+        self.price = price
 
     def insert_order_data(self):
         """
@@ -29,11 +30,11 @@ class Order:
         """
         try:
             query = "INSERT INTO orders (user_id,parcel_name,receiver_name,destination,\
-           location,status,deliver_status)\
-             VALUES(%s,%s,%s,%s,%s,%s,%s)"
+           location,status,deliver_status,price)\
+             VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
             data = (self.user_id, self.parcel_name,
                     self.receiver_name, self.destination,
-                    self.present_location, self.status, self.deliver_status)
+                    self.present_location, self.status, self.deliver_status,self.price)
             db.cur.execute(query, data)
             return True
         except Exception as error:
@@ -57,7 +58,7 @@ class Order:
     def order_history():
         """This method gets all parcel orders made and returns them"""
         query = "select users.username, orders.parcel_name, orders.destination, orders.status,\
-         orders.receiver_name, orders.location, orders.parcel_order_id,orders.deliver_status\
+         orders.receiver_name, orders.price, orders.location, orders.parcel_order_id,orders.deliver_status\
           from orders join users on orders.user_id=users.user_id"
         db.cur.execute(query)
         rows = db.cur.fetchall()

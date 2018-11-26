@@ -36,16 +36,16 @@ class BaseCase(unittest.TestCase):
             "valid_admin_login": {"username": "admin", "password": "admin"}
         }
         self.parcel = {
-            "valid_parcel": {"parcel_name": "chairs", "destination": "jinja", "receiver": "danny"},
-            "invalid_parcel_name": {"parcel_name": "", "destination": "jinja", "receiver": "danny"},
-            "ivalid_destination": {"parcel_name": "chairs", "destination": "", "receiver": "danny"},
-            "invalid_receiver": {"parcel_name": "chairs", "destination": "jinja", "receiver": ""},
+            "valid_parcel": {"parcel_name": "chairs", "destination": "jinja", "receiver": "danny", "price":12000},
+            "invalid_parcel_name": {"parcel_name": "", "destination": "jinja", "receiver": "danny", "price": 12000},
+            "ivalid_destination": {"parcel_name": "chairs", "destination": "", "receiver": "danny", "price": 12000},
+            "invalid_receiver": {"parcel_name": "chairs", "destination": "jinja", "receiver": "", "price": 12000},
         }
         self.parcel_update = {
             "destination": {"destination": "wandegeya"},
             "location": {"location": "Jinja"},
             "invalid_location": {"location": ""},
-            "delivery_status": {"delivery_status": "transit"}
+            "delivery_status": {"delivery_status": "delivered"}
         }
 
     def create_valid_user(self):
