@@ -4,7 +4,8 @@ import flask.views
 from werkzeug.security import generate_password_hash
 from flasgger import swag_from
 from app.helper import (is_not_valid_username,\
-                        is_not_valid_password, validate_not_email_structure, is_not_valid_role)
+                        is_not_valid_password, validate_not_email_structure,\
+                        is_not_valid_role, validate_not_keys)
 from .models import User
 
 
@@ -13,9 +14,13 @@ class Register(flask.views.MethodView):
     @swag_from('../docs/signup.yml', methods=['POST'])
     def post(self):
         """Method handling the user signup route"""
+        print(request.get_json())
         try:
             parser = request.get_json()
-            if len(parser.keys()) != 4:
+            # if parser.get('csrf_token') != "randome string":
+            #     return make_response(jsonify("csrf missing"))
+
+            if validate_not_keys(parser,4):
                 return make_response(jsonify({"message": "Some fields are missing!"}),400)
             username = parser.get('username')
             user_password = parser.get('password')

@@ -19,7 +19,7 @@ class UserSpecificOrder(flask.views.MethodView):
         new_order = Order(user_id=user_id, parcel_name=None, order_id=None, \
                           receiver_name=None, status=None,
                           deliver_status=None \
-                          , destination=None, present_location=None)
+                          , destination=None, present_location=None, price=None)
         order = new_order.user_orders()
         if not order:
             return make_response(jsonify({'messege': "you have no orders at this time"}), 404)
@@ -38,11 +38,13 @@ class UserSpecificOrder(flask.views.MethodView):
         order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
                       receiver_name=None, status=None,
                       deliver_status=None \
-                      , destination=destination.lower(), present_location=None)
+                      , destination=destination.lower(), present_location=None, price=None)
         if is_not_valid_order(destination.strip()):
             return make_response(jsonify({'message': 'destination incorrect'}), 400)
         if order.check_delivery_status():
-            return make_response(jsonify({"message": "You can not change the destination of a delivered product"}), \
+            return make_response(jsonify({"message": \
+                                              "You can not change the\
+                                               destination of a delivered product"}), \
                                  400)
 
         update_destination = order.update_destination()
@@ -63,9 +65,11 @@ class UserSpecificOrderById(flask.views.MethodView):
         new_order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
                           receiver_name=None, status=None,
                           deliver_status=None \
-                          , destination=None, present_location=None)
+                          , destination=None, present_location=None, price=None)
         order = new_order.single_order()
         if not order:
-            return make_response(jsonify({'message': "This parcel order doesn't exist please check id and try again"}),
+            return make_response(jsonify({'message': \
+                                              "This parcel order doesn't\
+                                               exist please check id and try again"}),
                                  404)
         return make_response(jsonify({'orders': order}), 200)

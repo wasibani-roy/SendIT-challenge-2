@@ -14,7 +14,7 @@ import re
 def is_not_valid_username(key):
     """This method validates the users username"""
     if not key or key.isspace() or not re.compile('^[a-zA-Z]+$').match(key) \
-            or not len(str(key)) > 4 or not isinstance(key, str):
+            or not len(str(key)) > 4 or not isinstance(key, str) or len(key) > 25:
         return True
 
 
@@ -58,4 +58,8 @@ def validate_not_email_structure(key):
     if '@' not in key or '.' not in key or key[0] == '@' or key[0] == '.' or key.index("@") >= key.index('.') \
             or key.count("@") > 1 \
             or key.count(".") > 1 or key.index(".") == key.index("@") + 1:
+        return True
+
+def validate_not_keys(parser, number_items):
+    if len(parser.keys()) != number_items:
         return True

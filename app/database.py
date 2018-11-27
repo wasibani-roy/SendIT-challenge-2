@@ -32,7 +32,8 @@ class Database:
                 parcel_name VARCHAR NOT NULL,
                 location VARCHAR NOT NULL,
                 status VARCHAR NOT NULL,
-                deliver_status VARCHAR NULL, 
+                deliver_status VARCHAR NULL,
+                price INTEGER NOT NULL, 
                 FOREIGN KEY (user_id) REFERENCES users(user_id) 
                 ON DELETE CASCADE ON UPDATE CASCADE)"""
 
@@ -56,7 +57,8 @@ class Database:
                 parcel_name VARCHAR NOT NULL,
                 location VARCHAR NOT NULL,
                 status VARCHAR NOT NULL,
-                deliver_status VARCHAR NULL, 
+                deliver_status VARCHAR NULL,
+                price INTEGER NOT NULL, 
                 FOREIGN KEY (user_id) REFERENCES users(user_id) 
                 ON DELETE CASCADE ON UPDATE CASCADE)"""
 

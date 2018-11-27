@@ -1,6 +1,7 @@
 """This module handles the creation of app basing on passed in config name"""
 from flask import (Flask, jsonify)
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from flasgger import Swagger
 from instance.config import app_config
 from .users import users as users_blueprint
@@ -22,6 +23,7 @@ def create_app(config_name):
 
     Swagger(app)
 
+    CORS(app)
     # We add JWT secret key constant
     app.config["JWT_SECRET_KEY"] = "wasibani93-256"
 
