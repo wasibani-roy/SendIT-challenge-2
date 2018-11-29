@@ -20,11 +20,10 @@ class Login(flask.views.MethodView):
 
         """
         data = request.get_json()
-        if validate_not_keys(data, 3):
+        if validate_not_keys(data, 2):
             return make_response(jsonify({"message": "Some fields are missing!"}), 400)
         username = data.get('username')
         password = data.get('password')
-        role = data.get('role')
         existing_user = User(username=username.lower(), email="none", password=password, role="none")
 
         if is_not_valid_username(username.strip()):
@@ -38,7 +37,7 @@ class Login(flask.views.MethodView):
         user = existing_user.fetch_user(username)
         if user and check_password_hash(user['password'], password):
             access_token = create_access_token \
-                (identity={"user_id": user['user_id']})
+                (identity={"user_id": user['user_id'], "role": user['role']})
             return make_response(jsonify({
                 "message": "You have successfully logged in",
                 "access token": access_token}), 200)
