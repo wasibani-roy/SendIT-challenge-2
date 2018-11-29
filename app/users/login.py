@@ -40,6 +40,6 @@ class Login(flask.views.MethodView):
                 (identity={"user_id": user['user_id'], "role": user['role']})
             return make_response(jsonify({
                 "message": "You have successfully logged in",
-                "access token": access_token}), 200)
+                "access_token": access_token}), 200)
 
         return make_response(jsonify({'message': 'Invalid credentials'}), 401)
