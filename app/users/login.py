@@ -24,7 +24,9 @@ class Login(flask.views.MethodView):
             return make_response(jsonify({"message": "Some fields are missing!"}), 400)
         username = data.get('username')
         password = data.get('password')
-        existing_user = User(username=username.lower(), email="none", password=password, role="none")
+        # role = data.get('role')
+        username_actual = username.lower()
+        existing_user = User(username=username_actual, email="none", password=password, role="none")
 
         if is_not_valid_username(username.strip()):
             return make_response(jsonify({"message": "Username is incorrect"}), 400)
@@ -34,7 +36,7 @@ class Login(flask.views.MethodView):
 
         # read from database to find the user and then check the password
 
-        user = existing_user.fetch_user(username)
+        user = existing_user.fetch_user(username_actual)
         if user and check_password_hash(user['password'], password):
             access_token = create_access_token \
                 (identity={"user_id": user['user_id'], "role": user['role']})

@@ -60,5 +60,5 @@ class ParcelOrder(flask.views.MethodView):
             return make_response(jsonify({'message': 'Order has already been placed'}), 403)
         create_order = order.insert_order_data()
         if create_order:
-            return make_response(jsonify({'messege': "you have succesfully placed order"}), 201)
+            return make_response(jsonify({'message': "you have succesfully placed order"}), 201)
         return make_response(jsonify({"message": "Order not placed succesfully"}), 400)

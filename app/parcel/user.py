@@ -22,8 +22,8 @@ class UserSpecificOrder(flask.views.MethodView):
                           , destination=None, present_location=None, price=None)
         order = new_order.user_orders()
         if not order:
-            return make_response(jsonify({'messege': "you have no orders at this time"}), 404)
-        return make_response(jsonify({'orders': order}), 200)
+            return make_response(jsonify({'message': "you have no orders at this time"}), 404)
+        return make_response(jsonify(order), 200)
 
     @jwt_required
     @swag_from('../docs/put_destination.yml', methods=['PUT'])
