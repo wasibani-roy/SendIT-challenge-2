@@ -18,7 +18,7 @@ class ParcelOrder(flask.views.MethodView):
             orders = Order.order_history()
             if not orders:
                 return make_response(jsonify({"message": "No orders placed so far"}), 200)
-            return make_response(jsonify({"Parcel orders": orders}), 200)
+            return make_response(jsonify(orders), 200)
 
         return make_response(jsonify({"message": \
                                           "You are not authorised to access this resource"}), 401)

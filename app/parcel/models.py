@@ -53,6 +53,8 @@ class Order:
             parcel_order['receiver'] = order['receiver_name']
             parcel_order['delivery_status'] = order['deliver_status']
             parcel_order['location'] = order['location']
+            parcel_order['destination'] = order['destination']
+            parcel_order['status'] = order['status']
             response.append(parcel_order)
         return response
 
@@ -71,7 +73,21 @@ class Order:
           from orders join users on orders.user_id=users.user_id"
         db.cur.execute(query)
         rows = db.cur.fetchall()
-        return rows
+        response = []
+        for row in rows:
+            parcel_order = {}
+            parcel_order['parcel_order_id'] = row['parcel_order_id']
+            parcel_order['parcel_name'] = row['parcel_name']
+            parcel_order['username'] = row['username']
+            parcel_order['receiver'] = row['receiver_name']
+            parcel_order['price'] = row['price']
+            parcel_order['destination'] = row['destination']
+            parcel_order['delivery_status'] = row['deliver_status']
+            parcel_order['location'] = row['location']
+            parcel_order['status'] = row['status']
+            response.append(parcel_order)
+
+        return response
 
     def fetch_user_by_id(self):
         """This method returns a specific users details basing on user id"""
