@@ -42,7 +42,7 @@ class Order:
 
     def user_orders(self):
         """This method is used to pick all the orders for a given user and return them"""
-        query = """SELECT  * from orders where orders.user_id = %s"""
+        query = """SELECT  * from orders where orders.user_id = %s and not status = 'cancelled'"""
         db.cur.execute(query, (self.user_id,))
         user_order = db.cur.fetchall()
         response = []
@@ -126,6 +126,13 @@ class Order:
         """This method is used to update the destination of a parcel"""
         query = "UPDATE orders SET destination = %s WHERE parcel_order_id = %s and user_id=%s"
         db.cur.execute(query, (self.destination, self.order_id, self.user_id))
+        updated_rows = db.cur.rowcount
+        return updated_rows
+
+    def update_user_status(self):
+        """This method is used to update the destination of a parcel"""
+        query = "UPDATE orders SET status = %s WHERE parcel_order_id = %s and user_id=%s"
+        db.cur.execute(query, (self.status, self.order_id, self.user_id))
         updated_rows = db.cur.rowcount
         return updated_rows
 

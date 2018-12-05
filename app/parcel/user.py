@@ -42,9 +42,7 @@ class UserSpecificOrder(flask.views.MethodView):
         if is_not_valid_order(destination.strip()):
             return make_response(jsonify({'message': 'destination incorrect'}), 400)
         if order.check_delivery_status():
-            return make_response(jsonify({"message": \
-                                              "You can not change the\
-                                               destination of a delivered product"}), \
+            return make_response(jsonify({"message": "You can not change the destination of a delivered product"}), \
                                  400)
 
         update_destination = order.update_destination()
@@ -73,3 +71,23 @@ class UserSpecificOrderById(flask.views.MethodView):
                                                exist please check id and try again"}),
                                  404)
         return make_response(jsonify({'orders': order}), 200)
+
+    @jwt_required
+    def put(self, parcel_id):
+        """Method handling the canceling of an order"""
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+        new_status = "cancelled"
+        order = Order(user_id=user_id, parcel_name=None, order_id=parcel_id, \
+                      receiver_name=None, status=new_status,
+                      deliver_status=None \
+                      , destination=None, present_location=None, price=None)
+        if order.check_delivery_status():
+            return make_response(jsonify({"message": "You can not cancel a delivered product"}), \
+                                 400)
+
+        update_status = order.update_user_status()
+        if update_status:
+            return make_response(jsonify({'message': 'You have successfully cancelled the order'}), 200)
+        return make_response(jsonify({'message': 'Failed to cancel order'}), 400)
+

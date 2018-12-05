@@ -21,6 +21,9 @@ orders.add_url_rule('/parcels/<int:parcel_id>/destination', \
 orders.add_url_rule('/parcels/<int:parcel_id>/status', \
                     view_func=AdminOrderStatus.as_view('update parcel delivery status'),
                     methods=['PUT'], strict_slashes=False)
+orders.add_url_rule('/parcels/<int:parcel_id>/cancel', \
+                    view_func=UserSpecificOrderById.as_view('cancel a parcel order'),
+                    methods=['PUT'], strict_slashes=False)
 orders.add_url_rule('/parcels/<int:parcel_id>/presentLocation', \
                     view_func=AdminOrderLocation.as_view('update parcel present location'),
                     methods=['PUT'], strict_slashes=False)
