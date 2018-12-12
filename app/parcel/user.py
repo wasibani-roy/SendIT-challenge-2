@@ -91,3 +91,66 @@ class UserSpecificOrderById(flask.views.MethodView):
             return make_response(jsonify({'message': 'You have successfully cancelled the order'}), 200)
         return make_response(jsonify({'message': 'Failed to cancel order'}), 400)
 
+
+class UserSpecificCompleteOrder(flask.views.MethodView):
+    """This class handles get route for getting users complete orders"""
+
+    @jwt_required
+    def get(self):
+        """Method handling the get completed specific users parcel orders by id"""
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+        parcel_deliver = "delivered"
+        new_order = Order(user_id=user_id, parcel_name=None, order_id=None, \
+                          receiver_name=None, status=None,
+                          deliver_status=parcel_deliver \
+                          , destination=None, present_location=None, price=None)
+        order = new_order.complete_user_orders()
+        if not order:
+            return make_response(jsonify({'message': \
+                                              "There are no complete orders"}),
+                                 404)
+        return make_response(jsonify(order), 200)
+
+class UserSpecificTransitOrder(flask.views.MethodView):
+    """This class handles get route for getting users transit orders"""
+
+    @jwt_required
+    def get(self):
+        """Method handling the get Transit specific users parcel orders by id"""
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+        parcel_transit = "transit"
+        new_order = Order(user_id=user_id, parcel_name=None, order_id=None, \
+                          receiver_name=None, status=None,
+                          deliver_status=parcel_transit \
+                          , destination=None, present_location=None, price=None)
+        order = new_order.transit_user_orders()
+        if not order:
+            return make_response(jsonify({'message': \
+                                              "No orders currently in transit"}),
+                                 404)
+        return make_response(jsonify(order), 200)
+
+class UserSearchOrder(flask.views.MethodView):
+    """This class handles the get and put routes of users orders"""
+    @jwt_required
+    def post(self):
+        """Method handling the update of destination"""
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+        parser = request.get_json()
+        if len(parser.keys()) != 1:
+            return make_response(jsonify({"message": "Some fields are missing!"}), 400)
+        search_item = parser.get('search_item')
+        order = Order(user_id=user_id, parcel_name=search_item, order_id=None, \
+                      receiver_name=None, status=None,
+                      deliver_status=None \
+                      , destination=None, present_location=None, price=None)
+        if is_not_valid_order(search_item.strip()):
+            return make_response(jsonify({'message': 'please enter search item'}), 400)
+
+        search_order = order.search_user_order()
+        if search_order:
+            return make_response(jsonify(search_order), 200)
+        return make_response(jsonify({'message': 'Error in search'}), 400)

@@ -58,6 +58,63 @@ class Order:
             response.append(parcel_order)
         return response
 
+    def complete_user_orders(self):
+        """This method is used to pick all the orders for a given user and return them"""
+        query = """SELECT  * from orders where orders.user_id = %s and not status = 'cancelled' and \
+        deliver_status = 'delivered'"""
+        db.cur.execute(query, (self.user_id,))
+        user_order = db.cur.fetchall()
+        response = []
+        for order in user_order:
+            parcel_order = {}
+            parcel_order['parcel_order_id'] = order['parcel_order_id']
+            parcel_order['parcel_name'] = order['parcel_name']
+            parcel_order['receiver'] = order['receiver_name']
+            parcel_order['delivery_status'] = order['deliver_status']
+            parcel_order['location'] = order['location']
+            parcel_order['destination'] = order['destination']
+            parcel_order['status'] = order['status']
+            response.append(parcel_order)
+        return response
+
+    def transit_user_orders(self):
+        """This method is used to pick all the orders for a given user and return them"""
+        query = """SELECT  * from orders where orders.user_id = %s and not status = 'cancelled' and \
+        deliver_status=%s"""
+        db.cur.execute(query, (self.user_id, self.deliver_status))
+        user_order = db.cur.fetchall()
+        response = []
+        for order in user_order:
+            parcel_order = {}
+            parcel_order['parcel_order_id'] = order['parcel_order_id']
+            parcel_order['parcel_name'] = order['parcel_name']
+            parcel_order['receiver'] = order['receiver_name']
+            parcel_order['delivery_status'] = order['deliver_status']
+            parcel_order['location'] = order['location']
+            parcel_order['destination'] = order['destination']
+            parcel_order['status'] = order['status']
+            response.append(parcel_order)
+        return response
+
+    def search_user_order(self):
+        """This method is used to pick all the orders for a given user based on search item"""
+        query = """SELECT  * from orders where orders.user_id = %s and not status = 'cancelled' and \
+        parcel_name = %s"""
+        db.cur.execute(query, (self.user_id, self.parcel_name,))
+        user_order = db.cur.fetchall()
+        response = []
+        for order in user_order:
+            parcel_order = {}
+            parcel_order['parcel_order_id'] = order['parcel_order_id']
+            parcel_order['parcel_name'] = order['parcel_name']
+            parcel_order['receiver'] = order['receiver_name']
+            parcel_order['delivery_status'] = order['deliver_status']
+            parcel_order['location'] = order['location']
+            parcel_order['destination'] = order['destination']
+            parcel_order['status'] = order['status']
+            response.append(parcel_order)
+        return response
+
     def single_order(self):
         """This method is used to pick a specific order for a given user"""
         query = """SELECT  * FROM orders WHERE orders.user_id = %s AND parcel_order_id = %s"""
