@@ -30,28 +30,14 @@ def is_not_valid_password(key):
     if not key or key.isspace() or len(str(key)) < 4:
         return True
 
-
-# def validate_not_username_string(key):
-#     if not isinstance(key, str):
-#         return True
 def is_not_valid_order(key):
     """This method validates order data sent by user"""
     if not key or key.isspace() or not isinstance(key, str) or not re.compile('^[a-zA-Z]+$').match(key):
         return True
-
-
-# def validate_not_username_characters(key):
-#     if not re.compile('^[a-zA-Z]+$').match(key):
-#         return True
-# def validate_not_order_detail_characters(key):
-#     if not re.compile('^[a-zA-Z]+$').match(key):
-#         return True
-
-
-# def validate_not_email(key):
-#     if '@' and '.' not in key:
-#         return True
-
+def is_not_valid_destination(key):
+    """This method validates location data entered by user"""
+    if not key or key.isspace() or not isinstance(key, str):
+        return True
 
 def validate_not_email_structure(key):
     """This method validates the email entered by user"""

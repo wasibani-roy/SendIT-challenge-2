@@ -3,7 +3,7 @@ from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from flasgger import swag_from
-from app.helper import (is_not_valid_order, validate_not_keys)
+from app.helper import (is_not_valid_order, validate_not_keys, is_not_valid_destination)
 from .models import Order
 
 
@@ -24,7 +24,7 @@ class AdminOrderLocation(flask.views.MethodView):
                           receiver_name=None, status=None,
                           deliver_status=None \
                           , destination=None, present_location=present_location.lower(), price=None)
-            if is_not_valid_order(present_location.strip()):
+            if is_not_valid_destination(present_location.strip()):
                 return make_response(jsonify({'message': 'present location is incorrect'}), 400)
 
             update_present_location = order.update_present_location()
@@ -57,9 +57,6 @@ class AdminOrderStatus(flask.views.MethodView):
             if is_not_valid_order(deliver_status.strip()):
                 return make_response(jsonify({'message': \
                                                   'Delivery status is incorrect'}), 400)
-            # if deliver_status != "delivered" or deliver_status != "transit":
-            #     return make_response(jsonify({"message": "Please enter a valid status"}), 400)
-
             update_status = order.update_delivery_status()
             if update_status:
                 return make_response(jsonify({'message': \

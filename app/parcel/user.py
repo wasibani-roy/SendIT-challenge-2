@@ -3,7 +3,7 @@ from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from flasgger import swag_from
-from app.helper import is_not_valid_order
+from app.helper import (is_not_valid_order, is_not_valid_destination)
 from .models import Order
 
 
@@ -39,7 +39,7 @@ class UserSpecificOrder(flask.views.MethodView):
                       receiver_name=None, status=None,
                       deliver_status=None \
                       , destination=destination.lower(), present_location=None, price=None)
-        if is_not_valid_order(destination.strip()):
+        if is_not_valid_destination(destination.strip()):
             return make_response(jsonify({'message': 'destination incorrect'}), 400)
         if order.check_delivery_status():
             return make_response(jsonify({"message": "You can not change the destination of a delivered product"}), \

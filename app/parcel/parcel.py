@@ -3,7 +3,8 @@ from flask import (jsonify, make_response, request)
 import flask.views
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from flasgger import swag_from
-from app.helper import (is_not_valid_order, validate_not_keys)
+from app.helper import (is_not_valid_order, validate_not_keys,\
+                        is_not_valid_destination)
 from .models import Order
 
 
@@ -39,7 +40,7 @@ class ParcelOrder(flask.views.MethodView):
         # Validate the data before use
         if is_not_valid_order(parcel_name.strip()):
             return make_response(jsonify({"message": "parcel_name is incorrect"}), 400)
-        if is_not_valid_order(destination.strip()):
+        if is_not_valid_destination(destination.strip()):
             return make_response(jsonify({"Message": "destination is in correct"}), 400)
         if is_not_valid_order(receiver_name.strip()):
             return make_response(jsonify({"Message": "receiver name is incorrect"}), 400)

@@ -25,11 +25,11 @@ class User:
         except Exception as error:
             raise error
 
-    def fetch_user(self, username):
+    def fetch_user(self, email):
         """Method to fetch a given users data by name"""
         try:
-            query = "SELECT * FROM users WHERE username=%s"
-            DB.cur.execute(query, (username,))
+            query = "SELECT * FROM users WHERE email=%s"
+            DB.cur.execute(query, (email,))
             user = DB.cur.fetchone()
             return user
         except:
