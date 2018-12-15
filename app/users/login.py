@@ -25,7 +25,6 @@ class Login(flask.views.MethodView):
             return make_response(jsonify({"message": "Some fields are missing!"}), 400)
         user_email = data.get('email')
         password = data.get('password')
-        # username_actual = username.lower()
         existing_user = User(username=None, email=user_email, password=password, role=None)
 
         if validate_not_email_structure(user_email):
