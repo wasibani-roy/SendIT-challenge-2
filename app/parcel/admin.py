@@ -65,3 +65,29 @@ class AdminOrderStatus(flask.views.MethodView):
                                               'Failed to update delivery status'}), 400)
         return make_response(jsonify({"message": \
                                           "You are not authorised to access this resource"}), 401)
+
+
+class AdminSearchOrder(flask.views.MethodView):
+    """This class handles the get and put routes of users orders"""
+    @jwt_required
+    def post(self):
+        """Method handling the Admin search"""
+        current_user = get_jwt_identity()
+        if Order.fetch_role(current_user["user_id"]) == "admin":
+            parser = request.get_json()
+            if len(parser.keys()) != 1:
+                return make_response(jsonify({"message": "Some fields are missing!"}), 400)
+            search_item = parser.get('search_item')
+            order = Order(user_id=None, parcel_name=search_item, order_id=None, \
+                          receiver_name=None, status=None,
+                          deliver_status=None \
+                          , destination=None, present_location=None, price=None)
+            if is_not_valid_order(search_item.strip()):
+                return make_response(jsonify({'message': 'please enter search item'}), 400)
+
+            search_order = order.search_admin_order()
+            if search_order:
+                return make_response(jsonify(search_order), 200)
+            return make_response(jsonify({'message': 'Error in search'}), 400)
+        return make_response(jsonify({"message": \
+                                          "You are not authorised to access this resource"}), 401)

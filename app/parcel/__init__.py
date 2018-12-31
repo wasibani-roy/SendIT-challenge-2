@@ -2,7 +2,7 @@
 from flask import Blueprint
 from .user import (UserSpecificOrder, UserSpecificOrderById,\
                    UserSpecificCompleteOrder, UserSpecificTransitOrder,UserSearchOrder)
-from .admin import AdminOrderLocation, AdminOrderStatus
+from .admin import (AdminOrderLocation, AdminOrderStatus, AdminSearchOrder)
 from .parcel import ParcelOrder
 
 orders = Blueprint('parcel', __name__, url_prefix='/api/v2')
@@ -10,6 +10,8 @@ orders = Blueprint('parcel', __name__, url_prefix='/api/v2')
 orders.add_url_rule('/parcels', view_func=ParcelOrder.as_view('make order'),
                     methods=['POST'], strict_slashes=False)
 orders.add_url_rule('/parcels/search', view_func=UserSearchOrder.as_view('search order'),
+                    methods=['POST'], strict_slashes=False)
+orders.add_url_rule('/parcels/search/admin', view_func=AdminSearchOrder.as_view('Admin search order'),
                     methods=['POST'], strict_slashes=False)
 orders.add_url_rule('/parcels', view_func=ParcelOrder.as_view('get order'),
                     methods=['GET'], strict_slashes=False)

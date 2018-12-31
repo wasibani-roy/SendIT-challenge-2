@@ -132,6 +132,7 @@ class UserSpecificTransitOrder(flask.views.MethodView):
                                  404)
         return make_response(jsonify(order), 200)
 
+
 class UserSearchOrder(flask.views.MethodView):
     """This class handles the get and put routes of users orders"""
     @jwt_required

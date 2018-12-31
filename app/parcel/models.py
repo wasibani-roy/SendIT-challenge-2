@@ -115,6 +115,29 @@ class Order:
             response.append(parcel_order)
         return response
 
+    def search_admin_order(self):
+        """This method is used to pick all the orders for a given user based on search item"""
+        query = """select users.username, orders.parcel_name, orders.destination, orders.status,\
+         orders.receiver_name, orders.price, orders.location, orders.parcel_order_id,orders.deliver_status\
+          from orders join users on orders.user_id=users.user_id \
+          where orders.parcel_name like %s and not status = 'cancelled'"""
+        db.cur.execute(query, (self.parcel_name,))
+        user_order = db.cur.fetchall()
+        response = []
+        for row in user_order:
+            parcel_order = {}
+            parcel_order['parcel_order_id'] = row['parcel_order_id']
+            parcel_order['parcel_name'] = row['parcel_name']
+            parcel_order['username'] = row['username']
+            parcel_order['receiver'] = row['receiver_name']
+            parcel_order['price'] = row['price']
+            parcel_order['destination'] = row['destination']
+            parcel_order['delivery_status'] = row['deliver_status']
+            parcel_order['location'] = row['location']
+            parcel_order['status'] = row['status']
+            response.append(parcel_order)
+        return response
+
     def single_order(self):
         """This method is used to pick a specific order for a given user"""
         query = """SELECT  * FROM orders WHERE orders.user_id = %s AND parcel_order_id = %s"""
